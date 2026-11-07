@@ -1,0 +1,44 @@
+# Environment dan konfigurasi rahasia
+.env
+.env.*
+!.env.example
+
+# Database credentials
+config/db.php
+config/database.php
+config/config.php
+
+# Folder upload pengguna
+uploads/
+storage/uploads/
+public/uploads/
+
+# File backup database
+*.sql
+*.sql.gz
+*.bak
+*.backup
+
+# Log
+*.log
+logs/
+
+# Cache dan temporary
+cache/
+tmp/
+temp/
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# File sistem
+.DS_Store
