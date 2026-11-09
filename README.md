@@ -1,257 +1,573 @@
-# CasaOS - Your Personal Cloud 
-<!-- Readme i18n links -->
-<!-- > English | [中文](#) | [Français](#) -->
+# Attendly — Your Personal Attendance
 
 <p align="center">
-    <!-- CasaOS Banner -->
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_dark_night_800x300.png">
-        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800x300.png">
-        <img alt="CasaOS" src="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800x300.png">
-    </picture>
-    <br/>
-    <i>Connect with the community, establish autonomy, reduce the cost of SaaS, and MAXIMIZE the potential for a personalized copilot.</i>
-    <br/>
-    <br/>
-    <!-- CasaOS Badges -->
-    <a href="https://github.com/IceWhaleTech/CasaOS" target="_blank">
-        <img alt="CasaOS Version" src="https://img.shields.io/github/v/release/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=CasaOS" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/blob/main/LICENSE" target="_blank">
-        <img alt="CasaOS License" src="https://img.shields.io/github/license/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=License" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/pulls" target="_blank">
-        <img alt="CasaOS Pull Requests" src="https://img.shields.io/github/issues-pr/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=PRs" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/issues" target="_blank">
-        <img alt="CasaOS Issues" src="https://img.shields.io/github/issues/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Issues" />
-    </a>
-    <a href="https://codecov.io/gh/IceWhaleTech/CasaOS" > 
-    <img src="https://codecov.io/gh/IceWhaleTech/CasaOS/branch/main/graph/badge.svg?token=l9uMKGlkxM"/> 
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/stargazers" target="_blank">
-        <img alt="CasaOS Stargazers" src="https://img.shields.io/github/stars/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Stars" />
-    </a>
-    <!-- <a href="https://github.com/IceWhaleTech/CasaOS/releases" target="_blank">
-    <img alt="CasaOS Downloads" src="https://img.shields.io/github/downloads/IceWhaleTech/CasaOS/total?color=162453&style=flat-square" />
-    </a> -->
-    <br/>
-    <!-- CasaOS Community -->
-    <a href="https://discord.gg/knqAbbBbeX" target="_blank">
-        <img alt="IceWhale Discord" src="https://img.shields.io/discord/884667213326463016?color=162453&style=flat-square&label=Discord&logo=discord&logoColor=fff" />
-    </a>
-    <a href="https://github.com/IceWhaleTech/CasaOS/discussions" target="_blank">
-        <img alt="CasaOS GitHub Discussions" src="https://img.shields.io/github/discussions/IceWhaleTech/CasaOS?color=162453&style=flat-square&label=Discussions&logo=github" />
-    </a>
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-    <a href="#credits">
-        <img alt="All Contributors" src="https://img.shields.io/static/v1?label=All%20Contributors&message=15&color=162453&style=flat-square&logo=Handshake&logoColor=fff" />
-    </a>
-    <!-- CasaOS YouTube -->
-    <a href="https://www.youtube.com/channel/UC2zMrUYT17AJhIl9XWZzT8g" target="_blank">
-        <img alt="YouTube Tutorial Views" src="https://img.shields.io/youtube/channel/views/UC2zMrUYT17AJhIl9XWZzT8g?style=flat-square&logo=youtube&logoColor=red&label=YouTube%20Tutorial%20Views" />
-    </a>
-    <br/>    
-    <a href="http://bit.ly/45JQIiL" target="_blank">
-        <img alt="twitter ZimaSpace" src="https://img.shields.io/twitter/follow/ZimaSpace?style=flat-square&logo=X&label=Contact%20Us%20%40%20ZimaSpace&labelColor=555&color=555" />
-    </a>
-    <a href="http://bit.ly/4lgHj7V" target="_blank">
-        <img alt="facebook ZimaSpace" src="https://img.shields.io/badge/ZimaSpace-1877F2?style=flat-square&logo=Facebook&logoColor=fff&label=Contact%20Us&labelColor=555&color=162453" />
-    </a>
-    <br/>
-    <!-- CasaOS Links -->
-    <a href="https://www.casaos.io" target="_blank">Website</a> |
-    <a href="http://demo.casaos.io" target="_blank">Demo</a> |
-    <a href="https://github.com/IceWhaleTech/CasaOS" target="_blank">GitHub</a>
-    <br/>
-    <br/>
-    <!-- CasaOS Snapshots -->
-    <kbd>
-      <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="snapshot-dark.jpg">
-          <source media="(prefers-color-scheme: light)" srcset="snapshot-light.jpg">
-          <img alt="CasaOS Snapshot" src="snapshot-light.jpg">
-      </picture>
-    </kbd>
+  <img src="assets/images/logo.png" alt="Attendly Logo" width="180">
 </p>
 
-## Why do you need Personal Cloud?
+<p align="center">
+  <strong>Smart Attendance Management System</strong>
+  <br>
+  A modern, secure, and flexible web-based employee attendance management platform.
+  <br>
+  Manage employees, monitor attendance, organize work schedules, and simplify workforce administration with Attendly.
+  <br><br>
 
-In 2020, the team noticed three important trends:
-- The cost of computing power and storage was decreasing fast.
-- A part of cloud computing was moving towards edge computing.
-- The issue of consumer data asset ownership and attribution had been ignored.
+  <a href="https://github.com/Achil12/Attendly">
+    <img src="https://img.shields.io/github/stars/Achil12/Attendly?style=flat-square&color=3979f6&label=Stars" alt="GitHub Stars">
+  </a>
+  <a href="https://github.com/Achil12/Attendly/network/members">
+    <img src="https://img.shields.io/github/forks/Achil12/Attendly?style=flat-square&color=3979f6&label=Forks" alt="GitHub Forks">
+  </a>
+  <a href="https://github.com/Achil12/Attendly/issues">
+    <img src="https://img.shields.io/github/issues/Achil12/Attendly?style=flat-square&color=3979f6&label=Issues" alt="GitHub Issues">
+  </a>
+  <a href="https://github.com/Achil12/Attendly/pulls">
+    <img src="https://img.shields.io/github/issues-pr/Achil12/Attendly?style=flat-square&color=3979f6&label=Pull Requests" alt="Pull Requests">
+  </a>
+  <a href="https://github.com/Achil12/Attendly">
+    <img src="https://img.shields.io/github/last-commit/Achil12/Attendly?style=flat-square&color=3979f6&label=Last Commit" alt="Last Commit">
+  </a>
+  <br>
+  <a href="https://github.com/Achil12/Attendly">
+    <img src="https://img.shields.io/badge/Platform-Web%20Application-3979f6?style=flat-square" alt="Platform">
+  </a>
+  <a href="https://www.php.net/">
+    <img src="https://img.shields.io/badge/PHP-Backend-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP">
+  </a>
+  <a href="https://www.mysql.com/">
+    <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
+  </a>
+  <a href="https://getbootstrap.com/">
+    <img src="https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white" alt="Bootstrap">
+  </a>
+</p>
 
-Based on these trends, the team proposed a thought experiment internally: what if personal clouds were available under $100 in next five years? This personal cloud would provide a low-cost data collaboration solution as a personal data center, storing and managing data for creators and small organizations. A distributed collaborative computing network can be formed by personal servers located around the world. It could also control and connect all smart devices, providing cross-ecosystem local intelligent services.
+<p align="center">
+  <a href="#about">About</a> •
+  <a href="#features">Features</a> •
+  <a href="#technology-stack">Technology</a> •
+  <a href="#getting-started">Installation</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#contributing">Contributing</a>
+</p>
 
-Furthermore, the personal cloud could combine personal data to train personalized AI assistants. The idea is that this technology would be an effective way to solve the issue of consumer data asset ownership and , as well as provide a more affordable and efficient computing solution for individuals and small organizations.
+---
 
-> If you think what we are doing is valuable. Please **give us a star ⭐** and **fork it 🤞**!
+## About
+
+**Attendly** is a web-based employee attendance and workforce management system designed to simplify how organizations manage employee information, work schedules, attendance records, and administrative operations.
+
+Built with a modern interface and a PHP-MySQL backend, Attendly provides an integrated platform for managing workforce activities through a centralized dashboard.
+
+The system is designed with a multi-tenant architecture, allowing organizations to manage their own company data and users within an isolated environment.
+
+Attendly also provides a foundation for hardware-based attendance recording through RFID technology using ESP32 devices.
+
+Our goal is to make employee attendance management more accessible, organized, efficient, and scalable.
+
+> **Attendly — Your Personal Attendance.**
+
+## Why Attendly?
+
+Traditional attendance management often relies on manual processes, spreadsheets, or disconnected systems.
+
+These approaches can make it difficult to maintain accurate records, monitor employee attendance, and manage workforce information efficiently.
+
+Attendly aims to address these challenges through:
+
+- Centralized employee and attendance management.
+- Organized employee scheduling and department management.
+- Role-based access and administrative controls.
+- Multi-company data separation.
+- Flexible attendance methods.
+- A foundation for RFID hardware integration.
+- A responsive and user-friendly interface.
 
 ## Features
 
-- Friendly UI designed for home scenarios
-  - No code, no forms, intuitive, design for humanity
-- Multiple hardware and base system support
-  - ZimaBoard, NUC, RPi, old computers, whatever is available.
-- Selected apps in the app store, one-click installation
-  - Nextcloud, HomeAssistant, AdGuard, Jellyfin, *arr and more!
-- Easily install numerous Docker apps
-  - Over 100,000 apps from the Docker ecosystem can be easily installed
-- Elegant drive and file management
-  - What you see is what you get. No technical background required.
-- Well-designed system/app widgets
-  - What you care about, at a glance. Resource usage, app status, and more!
+### 1. Dashboard
+
+- Centralized administrative dashboard.
+- Employee statistics and summaries.
+- Attendance monitoring.
+- Quick access to important information.
+- Organized overview of workforce activities.
+
+### 2. Employee Management
+
+- Add, edit, and manage employee information.
+- Employee identification using NIK.
+- Employee profile management.
+- Department and position assignments.
+- Employee status management.
+- RFID card assignment support.
+
+### 3. Department Management
+
+- Create and manage departments.
+- Organize employees by department.
+- Maintain structured organizational information.
+
+### 4. Position Management
+
+- Manage employee positions and job titles.
+- Organize organizational roles.
+- Associate positions with employee records.
+
+### 5. Work Schedule Management
+
+- Create and manage employee work schedules.
+- Configure working days.
+- Manage work hours.
+- Organize employee attendance schedules.
+
+### 6. Office Location Management
+
+- Manage office locations.
+- Configure attendance location information.
+- Prepare location-based attendance management.
+
+### 7. Attendance Management
+
+- Manage employee attendance records.
+- Monitor attendance activities.
+- Record check-in and check-out information.
+- Organize attendance history.
+- Support attendance monitoring and reporting.
+
+### 8. Leave and Permission Management
+
+- Submit employee leave requests.
+- Manage permission requests.
+- Review request information.
+- Organize approval workflows.
+
+### 9. Reports
+
+- Attendance reporting.
+- Employee attendance summaries.
+- Organized attendance history.
+- Reporting and monitoring tools.
+
+### 10. RFID Attendance Integration
+
+Attendly is designed to support RFID-based attendance using ESP32 hardware.
+
+Planned integration includes:
+
+- RFID card identification.
+- ESP32-based RFID reader communication.
+- Employee-to-card association.
+- Attendance recording through RFID.
+- Communication between hardware and the Attendly server.
+
+**Hardware integration status:** The application provides the foundation for RFID integration. Actual device operation requires compatible RFID reader hardware and ESP32 configuration.
+
+### 11. Authentication and Security
+
+- User authentication.
+- Role-based access control.
+- Session management.
+- CSRF protection.
+- Multi-tenant access separation.
+- Company-level data isolation.
+- Protected administrative operations.
+
+### 12. Multi-Tenant Architecture
+
+Attendly is designed to support multiple organizations within one application.
+
+Each organization can manage its own:
+
+- Employees.
+- Departments.
+- Positions.
+- Work schedules.
+- Office locations.
+- Attendance records.
+- User accounts.
+- Administrative activities.
+
+Company-level access restrictions help prevent users from accessing data belonging to other organizations.
+
+---
+
+## Technology Stack
+
+Attendly uses common web technologies to provide a flexible and maintainable application.
+
+| Component | Technology |
+|---|---|
+| Frontend | HTML5 |
+| Styling | CSS3 |
+| UI Framework | Bootstrap 5.3.3 |
+| Icons | Font Awesome 6.7.2 |
+| JavaScript | Vanilla JavaScript |
+| Backend | PHP |
+| Database | MySQL |
+| Database Access | PDO |
+| Web Server | Apache |
+| Local Development | Laragon / XAMPP |
+| Version Control | Git |
+| Repository Hosting | GitHub |
+| Hardware Integration | ESP32 + RFID (planned) |
+
+## System Requirements
+
+### Server Requirements
+
+- PHP 8.1 or newer (PHP 8.2+ recommended).
+- MySQL 8.0 or compatible MariaDB version.
+- Apache Web Server.
+- PDO MySQL extension.
+- PHP JSON extension.
+- PHP Session support.
+- Modern web browser.
+
+### Development Requirements
+
+- Windows, Linux, or macOS.
+- Laragon, XAMPP, or equivalent local server environment.
+- Git.
+- Visual Studio Code or another code editor.
+- Web browser.
+
+---
 
 ## Getting Started
 
-CasaOS fully supports ZimaBoard, Intel NUC, and Raspberry Pi. Also, more computers and development boards and fully compatible with Ubuntu, Debian, Raspberry Pi OS, and CentOS with one-liner installation.
+Follow these instructions to install Attendly on your local development environment.
 
-### Hardware Compatibility
+### 1. Clone the Repository
 
-- amd64 / x86-64
-- arm64
-- armv7
-
-### System Compatibility
-
-Official Support
-- Debian 12 (✅ Tested, Recommended)
-- Ubuntu Server 20.04 (✅ Tested)
-- Raspberry Pi OS (✅ Tested)
-
-Community Support
-- Elementary 6.1 (✅ Tested)
-- Armbian 22.04 (✅ Tested)
-- Alpine (🚧 Not Fully Tested Yet)
-- OpenWrt (🚧 Not Fully Tested Yet)
-- ArchLinux (🚧 Not Fully Tested Yet)
-
-### Quick Setup CasaOS
-
-Freshly install a system from the list above and run this command:
-
-```sh
-wget -qO- https://get.casaos.io | sudo bash
+```bash
+git clone https://github.com/Achil12/Attendly.git
 ```
 
-or
+Navigate to the project directory:
 
-```sh
-curl -fsSL https://get.casaos.io | sudo bash
+```bash
+cd Attendly
 ```
 
-### Update CasaOS
+### 2. Configure the Web Server
 
-CasaOS can be updated from the User Interface (UI), via `Settings ... Update`.  
+For Laragon:
 
-Alternatively it can be updated from a terminal session.  To update from a terminal session, it must be done either from a secure shell (ssh) session to the device or from a directly attached terminal and keyboard to the device running CasaOS, this cannot be done from the terminal via the CasaOS User Interface (UI).  To update to the latest release of CasaOS from a terminal session run this command:
+Place the project inside:
 
-```sh
-wget -qO- https://get.casaos.io/update | sudo bash
+```text
+C:\laragon\www\Attendly
 ```
 
-or
+For XAMPP:
 
-```sh
-curl -fsSL https://get.casaos.io/update | sudo bash
+Place the project inside:
+
+```text
+C:\xampp\htdocs\Attendly
 ```
 
-To determine version of CasaOS from a terminal session run this command:
+Start Apache and MySQL from your local server control panel.
 
-```sh
-casaos -v
+### 3. Create the Database
+
+Open phpMyAdmin:
+
+```text
+http://localhost/phpmyadmin
 ```
 
+Create a new MySQL database for Attendly.
 
+Use the database name configured in your project configuration.
 
-### Uninstall CasaOS
+Import the database schema or SQL installation file supplied with the project, if available.
 
+### 4. Configure Database Connection
 
-v0.3.3 or newer
+Open the database configuration file:
 
-```sh
-casaos-uninstall
+```text
+config/db.php
 ```
 
-Before v0.3.3
+Configure the database connection according to your local MySQL environment.
 
-```sh
-curl -fsSL https://get.icewhale.io/casaos-uninstall.sh | sudo bash
+Example configuration:
+
+```php
+<?php
+
+$host = 'localhost';
+$dbname = 'attendly';
+$username = 'root';
+$password = '';
+
+$dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+
+$options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+];
+
+$pdo = new PDO(
+    $dsn,
+    $username,
+    $password,
+    $options
+);
 ```
 
-## Community 
+**Note:** This is an illustrative PDO configuration. Keep the actual configuration and connection variable names used by your project's `config/db.php`.
 
-The word Casa comes from the Spanish word for "home". Project CasaOS originated as a pre-installed system for the crowdfunded product [ZimaBoard](https://www.zimaboard.com) on Kickstarter.
+### 5. Open Attendly
 
-After looking at many systems and software on the market, the team found no server system designed for home scenarios, sadly true.
+After configuring the database and starting Apache and MySQL, open:
 
-So, we set out to build this open-source project to develop CasaOS with our own hands, everyone in the community, and you.
+```text
+http://localhost/Attendly/
+```
 
-We believe that through community-driven collaborative innovation and open communication with global developers, we can reshape the digital home experience like never before.
+If your project uses a different entry point or virtual host, access it using the configured application URL.
 
-**A warm welcome for you to get help or share great ideas in the [Discord](https://discord.gg/knqAbbBbeX)!**
+---
 
-[![Discord Card](https://discordapp.com/api/guilds/884667213326463016/widget.png?style=banner2)](https://discord.gg/knqAbbBbeX)
+## Application Architecture
+
+Attendly uses a PHP-based web application architecture with a MySQL database.
+
+The main components are:
+
+```text
++---------------------------+
+|       Web Browser         |
+|  Administrator / Employee |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|       Frontend UI         |
+| HTML / CSS / Bootstrap    |
+| JavaScript                |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|       PHP Backend         |
+| Authentication            |
+| Authorization             |
+| Business Logic            |
+| Attendance Processing     |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|       MySQL Database      |
+| Company Data              |
+| Employee Data             |
+| Attendance Records        |
+| Work Schedules            |
++---------------------------+
+```
+
+### RFID Integration Architecture
+
+The planned RFID attendance workflow:
+
+```text
++---------------------------+
+|       RFID Card           |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|     RFID Reader           |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|        ESP32              |
+| Card Identification       |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|     Attendly Backend      |
+| Card Validation           |
+| Employee Identification   |
+| Attendance Processing     |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|       MySQL Database      |
+| Attendance Records        |
++---------------------------+
+```
+
+The RFID workflow requires compatible hardware, firmware, and server-side communication endpoints before it can operate.
+
+---
+
+## User Roles
+
+Attendly supports role-based access to organize application permissions.
+
+| Role | Description |
+|---|---|
+| Owner | Manages company-level settings and administration. |
+| Admin | Manages operational data and administrative activities. |
+| Manager | Handles assigned workforce and attendance management activities. |
+| Employee | Uses employee-facing attendance and workforce features. |
+
+Actual access permissions depend on the role configuration implemented in the application.
+
+---
+
+## Security
+
+Security is an important part of Attendly's application architecture.
+
+The system includes security mechanisms such as:
+
+- Authentication and session handling.
+- Role-based authorization.
+- Multi-tenant company isolation.
+- CSRF token protection.
+- Server-side input validation.
+- PDO prepared statements.
+- Protected application routes and operations.
+- Restricted access to company-specific resources.
+
+For production deployment, always use HTTPS, strong passwords, secure database credentials, and regular backups.
+
+---
+
+## Project Status
+
+Attendly is under active development.
+
+| Module | Status |
+|---|---|
+| Authentication | Implemented |
+| Registration | Implemented |
+| Dashboard | Implemented |
+| Employee Management | Implemented |
+| Department Management | In Development |
+| Position Management | In Development |
+| Work Schedule Management | In Development |
+| Office Location Management | In Development |
+| Attendance Management | In Development |
+| Leave Management | In Development |
+| Reports | In Development |
+| Multi-Tenant Architecture | Implemented |
+| RFID Hardware Integration | Planned |
+
+*Module status is indicative and should be updated as development progresses.*
+
+---
+
+## Roadmap
+
+Future development plans include:
+
+- [ ] Complete all employee management modules.
+- [ ] Improve attendance monitoring.
+- [ ] Complete work schedule management.
+- [ ] Improve attendance reporting and exports.
+- [ ] Complete leave approval workflows.
+- [ ] Integrate ESP32 with RFID readers.
+- [ ] Implement real-time RFID attendance recording.
+- [ ] Improve dashboard analytics.
+- [ ] Add notification capabilities.
+- [ ] Improve mobile responsiveness.
+- [ ] Strengthen production deployment and security.
+- [ ] Expand system integrations.
+
+---
+
+## Screenshots
+
+Application screenshots will be added here as the interface and modules are finalized.
+
+Suggested documentation:
+
+```text
+docs/
+└── screenshots/
+    ├── login.png
+    ├── dashboard.png
+    ├── employees.png
+    ├── attendance.png
+    ├── schedules.png
+    └── reports.png
+```
+
+---
 
 ## Contributing
 
-CasaOS is a community-driven open source project and the people involved are CasaOS users. That means CasaOS will always need contributions from community members just like you!
+Contributions, suggestions, and improvements are welcome.
 
-- See <https://wiki.casaos.io/en/contribute> for ways of contributing to CasaOS
-- See <https://wiki.casaos.io/en/contribute/development> if you want to be involved in code contribution specifically
+To contribute:
 
+1. Fork this repository.
+2. Create a feature branch.
+
+```bash
+git checkout -b feature/your-feature-name
+```
+
+3. Make your changes.
+4. Commit your changes.
+
+```bash
+git commit -m "Add: your feature description"
+```
+
+5. Push your branch.
+
+```bash
+git push origin feature/your-feature-name
+```
+
+6. Open a Pull Request.
+
+Please ensure your changes are properly tested and documented.
+
+## Community & Support
+
+If you find Attendly useful, consider supporting the project.
+
+- **GitHub Repository:** https://github.com/Achil12/Attendly
+- **Issues:** https://github.com/Achil12/Attendly/issues
+- **Pull Requests:** https://github.com/Achil12/Attendly/pulls
+- **Discussions:** https://github.com/Achil12/Attendly/discussions
+
+For bug reports, feature requests, or technical questions, please use GitHub Issues.
 
 ## Credits
 
-Many thanks to everyone who has helped CasaOS so far!
+Attendly is developed as a web-based employee attendance management project.
 
-Everyone's contribution is greatly appreciated. ([Emoji Key](https://allcontributors.org/docs/en/emoji-key))
+Special thanks to the open-source communities and developers behind the technologies used in this project.
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/jerrykuku"><img src="https://avatars.githubusercontent.com/u/9485680?v=4?s=100" width="100px;" alt=""/><br /><sub><b>老竭力</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=jerrykuku" title="Code">💻</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=jerrykuku" title="Documentation">📖</a> <a href="#ideas-jerrykuku" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-jerrykuku" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-jerrykuku" title="Maintenance">🚧</a> <a href="#platform-jerrykuku" title="Packaging/porting to new platform">📦</a> <a href="#question-jerrykuku" title="Answering Questions">💬</a> <a href="https://github.com/IceWhaleTech/CasaOS/pulls?q=is%3Apr+reviewed-by%3Ajerrykuku" title="Reviewed Pull Requests">👀</a></td>
-    <td align="center"><a href="https://github.com/LinkLeong"><img src="https://avatars.githubusercontent.com/u/13556972?v=4?s=100" width="100px;" alt=""/><br /><sub><b>link</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=LinkLeong" title="Code">💻</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=LinkLeong" title="Documentation">📖</a> <a href="#ideas-LinkLeong" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-LinkLeong" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-LinkLeong" title="Maintenance">🚧</a> <a href="#question-LinkLeong" title="Answering Questions">💬</a> <a href="https://github.com/IceWhaleTech/CasaOS/pulls?q=is%3Apr+reviewed-by%3ALinkLeong" title="Reviewed Pull Requests">👀</a></td>
-    <td align="center"><a href="https://github.com/tigerinus"><img src="https://avatars.githubusercontent.com/u/7172560?v=4?s=100" width="100px;" alt=""/><br /><sub><b>太戈</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=tigerinus" title="Code">💻</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=tigerinus" title="Documentation">📖</a> <a href="#ideas-tigerinus" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-tigerinus" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-tigerinus" title="Maintenance">🚧</a> <a href="#mentoring-tigerinus" title="Mentoring">🧑‍🏫</a> <a href="#security-tigerinus" title="Security">🛡️</a> <a href="#question-tigerinus" title="Answering Questions">💬</a> <a href="https://github.com/IceWhaleTech/CasaOS/pulls?q=is%3Apr+reviewed-by%3Atigerinus" title="Reviewed Pull Requests">👀</a></td>
-    <td align="center"><a href="https://github.com/Lauren-ED209"><img src="https://avatars.githubusercontent.com/u/8243355?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Lauren</b></sub></a><br /><a href="#ideas-Lauren-ED209" title="Ideas, Planning, & Feedback">🤔</a> <a href="#fundingFinding-Lauren-ED209" title="Funding Finding">🔍</a> <a href="#projectManagement-Lauren-ED209" title="Project Management">📆</a> <a href="#question-Lauren-ED209" title="Answering Questions">💬</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=Lauren-ED209" title="Tests">⚠️</a></td>
-    <td align="center"><a href="https://JohnGuan.Cn"><img src="https://avatars.githubusercontent.com/u/3358477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Guan</b></sub></a><br /><a href="#blog-JohnGuan" title="Blogposts">📝</a> <a href="#content-JohnGuan" title="Content">🖋</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=JohnGuan" title="Documentation">📖</a> <a href="#ideas-JohnGuan" title="Ideas, Planning, & Feedback">🤔</a> <a href="#eventOrganizing-JohnGuan" title="Event Organizing">📋</a> <a href="#mentoring-JohnGuan" title="Mentoring">🧑‍🏫</a> <a href="#question-JohnGuan" title="Answering Questions">💬</a> <a href="https://github.com/IceWhaleTech/CasaOS/pulls?q=is%3Apr+reviewed-by%3AJohnGuan" title="Reviewed Pull Requests">👀</a></td>
-    <td align="center"><a href="https://blog.tippybits.com"><img src="https://avatars.githubusercontent.com/u/17506770?v=4?s=100" width="100px;" alt=""/><br /><sub><b>David Tippett</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=dtaivpp" title="Documentation">📖</a> <a href="#ideas-dtaivpp" title="Ideas, Planning, & Feedback">🤔</a> <a href="#question-dtaivpp" title="Answering Questions">💬</a></td>
-    <td align="center"><a href="https://github.com/zarevskaya"><img src="https://avatars.githubusercontent.com/u/60230221?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Skaya</b></sub></a><br /><a href="#mentoring-zarevskaya" title="Mentoring">🧑‍🏫</a> <a href="#question-zarevskaya" title="Answering Questions">💬</a> <a href="#tutorial-zarevskaya" title="Tutorials">✅</a> <a href="#translation-zarevskaya" title="Translation">🌍</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/AuthorShin"><img src="https://avatars.githubusercontent.com/u/4959043?v=4?s=100" width="100px;" alt=""/><br /><sub><b>AuthorShin</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=AuthorShin" title="Tests">⚠️</a> <a href="https://github.com/IceWhaleTech/CasaOS/issues?q=author%3AAuthorShin" title="Bug reports">🐛</a> <a href="#question-AuthorShin" title="Answering Questions">💬</a> <a href="#ideas-AuthorShin" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/baptiste313"><img src="https://avatars.githubusercontent.com/u/93325157?v=4?s=100" width="100px;" alt=""/><br /><sub><b>baptiste313</b></sub></a><br /><a href="#translation-baptiste313" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://github.com/DrMxrcy"><img src="https://avatars.githubusercontent.com/u/58747968?v=4?s=100" width="100px;" alt=""/><br /><sub><b>DrMxrcy</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=DrMxrcy" title="Tests">⚠️</a> <a href="#ideas-DrMxrcy" title="Ideas, Planning, & Feedback">🤔</a> <a href="#question-DrMxrcy" title="Answering Questions">💬</a></td>
-    <td align="center"><a href="https://github.com/Joooost"><img src="https://avatars.githubusercontent.com/u/12090673?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Joooost</b></sub></a><br /><a href="#ideas-Joooost" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://potyarkin.ml"><img src="https://avatars.githubusercontent.com/u/334908?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Vitaly Potyarkin</b></sub></a><br /><a href="#ideas-sio" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/bearfrieze"><img src="https://avatars.githubusercontent.com/u/1023813?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bjørn Friese</b></sub></a><br /><a href="#ideas-bearfrieze" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/Protektor-Desura"><img src="https://avatars.githubusercontent.com/u/1195496?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Protektor</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/issues?q=author%3AProtektor-Desura" title="Bug reports">🐛</a> <a href="#ideas-Protektor-Desura" title="Ideas, Planning, & Feedback">🤔</a> <a href="#question-Protektor-Desura" title="Answering Questions">💬</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/llwaini"><img src="https://avatars.githubusercontent.com/u/59589857?v=4?s=100" width="100px;" alt=""/><br /><sub><b>llwaini</b></sub></a><br /><a href="#projectManagement-llwaini" title="Project Management">📆</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=llwaini" title="Tests">⚠️</a> <a href="#tutorial-llwaini" title="Tutorials">✅</a></td>
-    <td align="center"><a href="https://github.com/CorrectRoadH"><img src="https://avatars.githubusercontent.com/u/29306285?v=4?s=100" width="100px;" alt=""/><br /><sub><b>CorrectRoadH</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=correctroadh" title="Code">💻</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=correctroadh" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/zhanghengxin"><img src="https://avatars.githubusercontent.com/u/24197448?v=4?s=100" width="100px;" alt=""/><br /><sub><b>zhanghengxin</b></sub></a><br /><a href="https://github.com/IceWhaleTech/CasaOS/commits?author=zhanghengxin" title="Code">💻</a> <a href="https://github.com/IceWhaleTech/CasaOS/commits?author=zhanghengxin" title="Documentation">📖</a></td>
-  </tr>
-</table>
+## License
 
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
+Please refer to the repository's `LICENSE` file for licensing information.
 
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
-
-## Changelog
-
-Detailed changes for each release are documented in the [release notes](https://github.com/IceWhaleTech/CasaOS/releases).
+If no license has been added yet, the project remains subject to the default copyright rules.
 
 ---
 
 <p align="center">
-    <a href="https://dashboard.trackgit.com/token/l5q8egi92tfhlxd70l2l">
-        <img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/l5q8egi92tfhlxd70l2l" alt="trackgit-views" />
-    </a>
+  <strong>Attendly — Your Personal Attendance</strong>
+  <br>
+  Making attendance management smarter, simpler, and more organized.
+  <br><br>
+  Made with ❤️ for better workforce management.
+  <br><br>
+  <a href="https://github.com/Achil12/Attendly">GitHub Repository</a>
 </p>
