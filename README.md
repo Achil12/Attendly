@@ -5,21 +5,18 @@
 </p>
 
 <p align="center">
-  <strong>Smart Attendance Management System</strong>
+  <strong>Sistem Manajemen Kehadiran Karyawan Modern</strong>
   <br>
-  A modern, secure, and flexible web-based employee attendance management platform.
-  <br>
-  Manage employees, monitor attendance, organize work schedules, and simplify workforce administration with Attendly.
+  Kelola karyawan, jadwal kerja, absensi, perizinan, dan laporan kehadiran dalam satu platform terintegrasi.
   <br><br>
-
   <a href="https://github.com/Achil12/Attendly">
-    <img src="https://img.shields.io/github/stars/Achil12/Attendly?style=flat-square&color=3979f6&label=Stars" alt="GitHub Stars">
+    <img src="https://img.shields.io/github/stars/Achil12/Attendly?style=flat-square&color=3979f6&label=Stars" alt="Stars">
   </a>
   <a href="https://github.com/Achil12/Attendly/network/members">
-    <img src="https://img.shields.io/github/forks/Achil12/Attendly?style=flat-square&color=3979f6&label=Forks" alt="GitHub Forks">
+    <img src="https://img.shields.io/github/forks/Achil12/Attendly?style=flat-square&color=3979f6&label=Forks" alt="Forks">
   </a>
   <a href="https://github.com/Achil12/Attendly/issues">
-    <img src="https://img.shields.io/github/issues/Achil12/Attendly?style=flat-square&color=3979f6&label=Issues" alt="GitHub Issues">
+    <img src="https://img.shields.io/github/issues/Achil12/Attendly?style=flat-square&color=3979f6&label=Issues" alt="Issues">
   </a>
   <a href="https://github.com/Achil12/Attendly/pulls">
     <img src="https://img.shields.io/github/issues-pr/Achil12/Attendly?style=flat-square&color=3979f6&label=Pull Requests" alt="Pull Requests">
@@ -28,546 +25,664 @@
     <img src="https://img.shields.io/github/last-commit/Achil12/Attendly?style=flat-square&color=3979f6&label=Last Commit" alt="Last Commit">
   </a>
   <br>
-  <a href="https://github.com/Achil12/Attendly">
-    <img src="https://img.shields.io/badge/Platform-Web%20Application-3979f6?style=flat-square" alt="Platform">
-  </a>
-  <a href="https://www.php.net/">
-    <img src="https://img.shields.io/badge/PHP-Backend-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP">
-  </a>
-  <a href="https://www.mysql.com/">
-    <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
-  </a>
-  <a href="https://getbootstrap.com/">
-    <img src="https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white" alt="Bootstrap">
-  </a>
+  <img src="https://img.shields.io/badge/PHP-Backend-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white" alt="Bootstrap">
+  <img src="https://img.shields.io/badge/Platform-Web%20Application-3979f6?style=flat-square" alt="Platform">
 </p>
 
 <p align="center">
-  <a href="#about">About</a> •
-  <a href="#features">Features</a> •
-  <a href="#technology-stack">Technology</a> •
-  <a href="#getting-started">Installation</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#contributing">Contributing</a>
+  <a href="#tentang-attendly">Tentang</a> |
+  <a href="#fitur-utama">Fitur</a> |
+  <a href="#teknologi">Teknologi</a> |
+  <a href="#instalasi">Instalasi</a> |
+  <a href="#pembaruan-aplikasi">Pembaruan</a> |
+  <a href="#kontribusi-komunitas">Kontribusi</a>
 </p>
 
 ---
 
-## About
+## Tentang Attendly
 
-**Attendly** is a web-based employee attendance and workforce management system designed to simplify how organizations manage employee information, work schedules, attendance records, and administrative operations.
+**Attendly** adalah platform manajemen kehadiran karyawan berbasis web yang dirancang untuk membantu perusahaan dan organisasi mengelola aktivitas kepegawaian secara lebih mudah, terstruktur, dan efisien.
 
-Built with a modern interface and a PHP-MySQL backend, Attendly provides an integrated platform for managing workforce activities through a centralized dashboard.
+Dengan antarmuka modern dan sistem pengelolaan data terintegrasi, Attendly menyediakan berbagai fasilitas untuk mengelola informasi karyawan, departemen, jabatan, jadwal kerja, absensi, perizinan, serta laporan kehadiran.
 
-The system is designed with a multi-tenant architecture, allowing organizations to manage their own company data and users within an isolated environment.
+Attendly mengusung pendekatan pengelolaan kehadiran yang fleksibel dengan dukungan teknologi web dan integrasi perangkat RFID.
 
-Attendly also provides a foundation for hardware-based attendance recording through RFID technology using ESP32 devices.
+Melalui satu platform, administrator dapat mengelola berbagai kebutuhan administrasi kepegawaian secara terpusat.
 
-Our goal is to make employee attendance management more accessible, organized, efficient, and scalable.
+**Attendly — Your Personal Attendance.**
 
-> **Attendly — Your Personal Attendance.**
+## Mengapa Attendly?
 
-## Why Attendly?
+Pengelolaan kehadiran merupakan salah satu bagian penting dalam operasional perusahaan.
 
-Traditional attendance management often relies on manual processes, spreadsheets, or disconnected systems.
+Proses pencatatan manual sering kali membutuhkan waktu, menyulitkan pemantauan, dan membuat pengelolaan data menjadi kurang terorganisir.
 
-These approaches can make it difficult to maintain accurate records, monitor employee attendance, and manage workforce information efficiently.
+Attendly menghadirkan solusi pengelolaan kehadiran melalui:
 
-Attendly aims to address these challenges through:
+- Pengelolaan data karyawan secara terpusat.
+- Pemantauan kehadiran karyawan.
+- Pengaturan jadwal kerja.
+- Pengelolaan departemen dan jabatan.
+- Manajemen perizinan karyawan.
+- Pencatatan dan rekapitulasi absensi.
+- Dukungan identifikasi RFID.
+- Pengelolaan perusahaan dengan arsitektur multi-tenant.
 
-- Centralized employee and attendance management.
-- Organized employee scheduling and department management.
-- Role-based access and administrative controls.
-- Multi-company data separation.
-- Flexible attendance methods.
-- A foundation for RFID hardware integration.
-- A responsive and user-friendly interface.
-
-## Features
+## Fitur Utama
 
 ### 1. Dashboard
 
-- Centralized administrative dashboard.
-- Employee statistics and summaries.
-- Attendance monitoring.
-- Quick access to important information.
-- Organized overview of workforce activities.
+- Ringkasan informasi perusahaan.
+- Statistik karyawan.
+- Ringkasan kehadiran.
+- Informasi aktivitas sistem.
+- Navigasi menuju modul utama.
 
-### 2. Employee Management
+### 2. Manajemen Karyawan
 
-- Add, edit, and manage employee information.
-- Employee identification using NIK.
-- Employee profile management.
-- Department and position assignments.
-- Employee status management.
-- RFID card assignment support.
+- Tambah dan ubah data karyawan.
+- Pengelolaan identitas karyawan.
+- Informasi kontak dan profil.
+- Pengaturan departemen dan jabatan.
+- Pengelolaan status karyawan.
+- Pengelolaan kartu RFID.
 
-### 3. Department Management
+### 3. Manajemen Departemen
 
-- Create and manage departments.
-- Organize employees by department.
-- Maintain structured organizational information.
+- Pengelolaan departemen perusahaan.
+- Pengaturan struktur organisasi.
+- Pengelompokan karyawan berdasarkan departemen.
 
-### 4. Position Management
+### 4. Manajemen Jabatan
 
-- Manage employee positions and job titles.
-- Organize organizational roles.
-- Associate positions with employee records.
+- Pengelolaan jabatan karyawan.
+- Pengaturan posisi pekerjaan.
+- Pengelompokan berdasarkan struktur organisasi.
 
-### 5. Work Schedule Management
+### 5. Jadwal Kerja
 
-- Create and manage employee work schedules.
-- Configure working days.
-- Manage work hours.
-- Organize employee attendance schedules.
+- Pengaturan jadwal kerja.
+- Pengelolaan hari kerja.
+- Pengaturan jam masuk dan pulang.
+- Pengelolaan jadwal karyawan.
 
-### 6. Office Location Management
+### 6. Lokasi Kantor
 
-- Manage office locations.
-- Configure attendance location information.
-- Prepare location-based attendance management.
+- Pengelolaan lokasi perusahaan.
+- Pengaturan informasi lokasi kerja.
+- Pengelolaan lokasi untuk kebutuhan absensi.
 
-### 7. Attendance Management
+### 7. Manajemen Absensi
 
-- Manage employee attendance records.
-- Monitor attendance activities.
-- Record check-in and check-out information.
-- Organize attendance history.
-- Support attendance monitoring and reporting.
+- Pencatatan kehadiran karyawan.
+- Informasi waktu masuk dan pulang.
+- Pemantauan riwayat absensi.
+- Pengelolaan data kehadiran.
+- Rekapitulasi aktivitas absensi.
 
-### 8. Leave and Permission Management
+### 8. Pengajuan Izin
 
-- Submit employee leave requests.
-- Manage permission requests.
-- Review request information.
-- Organize approval workflows.
+- Pengajuan izin karyawan.
+- Pengelolaan permohonan izin.
+- Informasi status pengajuan.
+- Pengelolaan persetujuan izin.
 
-### 9. Reports
+### 9. Laporan
 
-- Attendance reporting.
-- Employee attendance summaries.
-- Organized attendance history.
-- Reporting and monitoring tools.
+- Laporan kehadiran karyawan.
+- Rekapitulasi absensi.
+- Riwayat kehadiran.
+- Informasi data karyawan.
 
-### 10. RFID Attendance Integration
+### 10. Integrasi RFID
 
-Attendly is designed to support RFID-based attendance using ESP32 hardware.
+Attendly mendukung konsep pencatatan kehadiran menggunakan teknologi RFID dengan perangkat ESP32.
 
-Planned integration includes:
+Fitur integrasi RFID meliputi:
 
-- RFID card identification.
-- ESP32-based RFID reader communication.
-- Employee-to-card association.
-- Attendance recording through RFID.
-- Communication between hardware and the Attendly server.
+- Identifikasi kartu RFID.
+- Pengenalan identitas karyawan.
+- Pengaitan kartu dengan data karyawan.
+- Pencatatan kehadiran melalui perangkat.
+- Komunikasi perangkat dengan sistem Attendly.
 
-**Hardware integration status:** The application provides the foundation for RFID integration. Actual device operation requires compatible RFID reader hardware and ESP32 configuration.
+### 11. Manajemen Pengguna
 
-### 11. Authentication and Security
+- Autentikasi pengguna.
+- Pengelolaan akun.
+- Hak akses berdasarkan peran.
+- Pengelolaan administrator.
+- Pemisahan akses berdasarkan perusahaan.
 
-- User authentication.
-- Role-based access control.
-- Session management.
-- CSRF protection.
-- Multi-tenant access separation.
-- Company-level data isolation.
-- Protected administrative operations.
+### 12. Multi-Tenant
 
-### 12. Multi-Tenant Architecture
+Attendly menggunakan arsitektur multi-tenant untuk mendukung pengelolaan beberapa perusahaan dalam satu platform.
 
-Attendly is designed to support multiple organizations within one application.
+Setiap perusahaan memiliki pengelolaan data tersendiri, meliputi:
 
-Each organization can manage its own:
-
-- Employees.
-- Departments.
-- Positions.
-- Work schedules.
-- Office locations.
-- Attendance records.
-- User accounts.
-- Administrative activities.
-
-Company-level access restrictions help prevent users from accessing data belonging to other organizations.
+- Data karyawan.
+- Departemen.
+- Jabatan.
+- Jadwal kerja.
+- Lokasi kantor.
+- Data absensi.
+- Pengguna dan hak akses.
 
 ---
 
-## Technology Stack
+## Teknologi
 
-Attendly uses common web technologies to provide a flexible and maintainable application.
+Attendly dibangun menggunakan teknologi web yang umum digunakan untuk pengembangan aplikasi modern.
 
-| Component | Technology |
+| Komponen | Teknologi |
 |---|---|
 | Frontend | HTML5 |
 | Styling | CSS3 |
-| UI Framework | Bootstrap 5.3.3 |
-| Icons | Font Awesome 6.7.2 |
+| Framework UI | Bootstrap 5.3.3 |
+| Ikon | Font Awesome 6.7.2 |
 | JavaScript | Vanilla JavaScript |
 | Backend | PHP |
 | Database | MySQL |
 | Database Access | PDO |
 | Web Server | Apache |
-| Local Development | Laragon / XAMPP |
 | Version Control | Git |
-| Repository Hosting | GitHub |
-| Hardware Integration | ESP32 + RFID (planned) |
+| Repository | GitHub |
+| Hardware Integration | ESP32 & RFID |
 
-## System Requirements
+## Tampilan Aplikasi
 
-### Server Requirements
+<p align="center">
+  <strong>Dashboard Attendly</strong>
+  <br>
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard Attendly" width="100%">
+</p>
 
-- PHP 8.1 or newer (PHP 8.2+ recommended).
-- MySQL 8.0 or compatible MariaDB version.
-- Apache Web Server.
-- PDO MySQL extension.
-- PHP JSON extension.
-- PHP Session support.
-- Modern web browser.
+<p align="center">
+  <strong>Manajemen Karyawan</strong>
+  <br>
+  <img src="docs/screenshots/karyawan.png" alt="Manajemen Karyawan" width="100%">
+</p>
 
-### Development Requirements
-
-- Windows, Linux, or macOS.
-- Laragon, XAMPP, or equivalent local server environment.
-- Git.
-- Visual Studio Code or another code editor.
-- Web browser.
+<p align="center">
+  <strong>Manajemen Absensi</strong>
+  <br>
+  <img src="docs/screenshots/absensi.png" alt="Manajemen Absensi" width="100%">
+</p>
 
 ---
 
-## Getting Started
+## Persyaratan Sistem
 
-Follow these instructions to install Attendly on your local development environment.
+### Server
 
-### 1. Clone the Repository
+- PHP 8.1 atau lebih baru.
+- MySQL 8.0 atau MariaDB yang kompatibel.
+- Apache Web Server.
+- Ekstensi PDO MySQL.
+- Ekstensi JSON PHP.
+- Session PHP.
+
+### Perangkat Pengembangan
+
+- Windows, Linux, atau macOS.
+- Laragon, XAMPP, atau web server sejenis.
+- Git.
+- Visual Studio Code atau editor kode lainnya.
+- Browser modern.
+
+---
+
+## Instalasi
+
+Ikuti langkah berikut untuk menjalankan Attendly di lingkungan lokal.
+
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/Achil12/Attendly.git
 ```
 
-Navigate to the project directory:
+Masuk ke direktori proyek:
 
 ```bash
 cd Attendly
 ```
 
-### 2. Configure the Web Server
+### 2. Konfigurasi Web Server
 
-For Laragon:
-
-Place the project inside:
+Untuk pengguna Laragon, letakkan folder proyek di:
 
 ```text
 C:\laragon\www\Attendly
 ```
 
-For XAMPP:
-
-Place the project inside:
+Untuk pengguna XAMPP:
 
 ```text
 C:\xampp\htdocs\Attendly
 ```
 
-Start Apache and MySQL from your local server control panel.
+Jalankan Apache dan MySQL melalui control panel masing-masing.
 
-### 3. Create the Database
+### 3. Membuat Database
 
-Open phpMyAdmin:
+Buka phpMyAdmin:
 
 ```text
 http://localhost/phpmyadmin
 ```
 
-Create a new MySQL database for Attendly.
+Buat database baru sesuai dengan nama database yang digunakan oleh Attendly.
 
-Use the database name configured in your project configuration.
+Import struktur database dari berkas SQL yang disediakan dalam repository.
 
-Import the database schema or SQL installation file supplied with the project, if available.
+### 4. Konfigurasi Database
 
-### 4. Configure Database Connection
-
-Open the database configuration file:
+Buka berkas konfigurasi:
 
 ```text
 config/db.php
 ```
 
-Configure the database connection according to your local MySQL environment.
+Sesuaikan informasi koneksi database dengan lingkungan server yang digunakan.
 
-Example configuration:
+Contoh konfigurasi PDO:
 
 ```php
-<?php
-
 $host = 'localhost';
 $dbname = 'attendly';
 $username = 'root';
 $password = '';
 
 $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
-
-$options = [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES => false,
-];
-
-$pdo = new PDO(
-    $dsn,
-    $username,
-    $password,
-    $options
-);
 ```
 
-**Note:** This is an illustrative PDO configuration. Keep the actual configuration and connection variable names used by your project's `config/db.php`.
+Gunakan konfigurasi koneksi yang sesuai dengan struktur aplikasi Attendly.
 
-### 5. Open Attendly
+### 5. Menjalankan Attendly
 
-After configuring the database and starting Apache and MySQL, open:
+Buka browser dan akses:
 
 ```text
 http://localhost/Attendly/
 ```
 
-If your project uses a different entry point or virtual host, access it using the configured application URL.
+Attendly dapat diakses setelah konfigurasi server dan database selesai.
 
 ---
 
-## Application Architecture
+## Arsitektur Sistem
 
-Attendly uses a PHP-based web application architecture with a MySQL database.
-
-The main components are:
+Attendly menggunakan arsitektur aplikasi web dengan PHP sebagai pemroses backend dan MySQL sebagai penyimpanan data.
 
 ```text
-+---------------------------+
-|       Web Browser         |
-|  Administrator / Employee |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|       Frontend UI         |
-| HTML / CSS / Bootstrap    |
-| JavaScript                |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|       PHP Backend         |
-| Authentication            |
-| Authorization             |
-| Business Logic            |
-| Attendance Processing     |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|       MySQL Database      |
-| Company Data              |
-| Employee Data             |
-| Attendance Records        |
-| Work Schedules            |
-+---------------------------+
+             +----------------------+
+             |      Pengguna        |
+             | Administrator       |
+             | Manager / Karyawan  |
+             +----------+-----------+
+                        |
+                        v
+             +----------------------+
+             |     Web Browser      |
+             | HTML / CSS / JS      |
+             +----------+-----------+
+                        |
+                        v
+             +----------------------+
+             |     PHP Backend      |
+             | Authentication       |
+             | Business Logic       |
+             | Attendance System    |
+             +----------+-----------+
+                        |
+                        v
+             +----------------------+
+             |     MySQL Database   |
+             | Employee Data        |
+             | Company Data         |
+             | Attendance Records   |
+             +----------------------+
 ```
 
-### RFID Integration Architecture
-
-The planned RFID attendance workflow:
+### Integrasi RFID
 
 ```text
-+---------------------------+
-|       RFID Card           |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|     RFID Reader           |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|        ESP32              |
-| Card Identification       |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|     Attendly Backend      |
-| Card Validation           |
-| Employee Identification   |
-| Attendance Processing     |
-+-------------+-------------+
-              |
-              v
-+---------------------------+
-|       MySQL Database      |
-| Attendance Records        |
-+---------------------------+
++----------------------+
+|      Kartu RFID      |
++----------+-----------+
+           |
+           v
++----------------------+
+|     RFID Reader      |
++----------+-----------+
+           |
+           v
++----------------------+
+|        ESP32         |
++----------+-----------+
+           |
+           v
++----------------------+
+|   Attendly Backend   |
++----------+-----------+
+           |
+           v
++----------------------+
+|    MySQL Database    |
++----------------------+
 ```
 
-The RFID workflow requires compatible hardware, firmware, and server-side communication endpoints before it can operate.
+## Hak Akses Pengguna
 
----
+Attendly menyediakan pengelolaan akses berdasarkan peran pengguna.
 
-## User Roles
-
-Attendly supports role-based access to organize application permissions.
-
-| Role | Description |
+| Peran | Keterangan |
 |---|---|
-| Owner | Manages company-level settings and administration. |
-| Admin | Manages operational data and administrative activities. |
-| Manager | Handles assigned workforce and attendance management activities. |
-| Employee | Uses employee-facing attendance and workforce features. |
+| Owner | Pengelolaan perusahaan dan administrasi utama. |
+| Admin | Pengelolaan data dan operasional perusahaan. |
+| Manager | Pengelolaan aktivitas dan informasi karyawan sesuai kewenangan. |
+| Employee | Akses fitur kepegawaian dan kehadiran. |
 
-Actual access permissions depend on the role configuration implemented in the application.
+## Keamanan
 
----
+Attendly menerapkan mekanisme keamanan untuk menjaga pengelolaan informasi dan akses pengguna, termasuk:
 
-## Security
-
-Security is an important part of Attendly's application architecture.
-
-The system includes security mechanisms such as:
-
-- Authentication and session handling.
-- Role-based authorization.
-- Multi-tenant company isolation.
-- CSRF token protection.
-- Server-side input validation.
-- PDO prepared statements.
-- Protected application routes and operations.
-- Restricted access to company-specific resources.
-
-For production deployment, always use HTTPS, strong passwords, secure database credentials, and regular backups.
+- Autentikasi pengguna.
+- Pengaturan hak akses.
+- Pengelolaan session.
+- Perlindungan CSRF.
+- Validasi data.
+- Prepared statements.
+- Pembatasan akses berdasarkan perusahaan.
+- Pengelolaan akses halaman dan operasi sistem.
 
 ---
 
-## Project Status
+## Pembaruan Aplikasi (Update)
 
-Attendly is under active development.
+Attendly menyediakan pembaruan aplikasi melalui repository resmi GitHub.
 
-| Module | Status |
+Pengguna dapat memperoleh versi terbaru untuk mendapatkan perubahan, perbaikan, dan peningkatan aplikasi.
+
+### 1. Pembaruan Menggunakan Git
+
+Jika Attendly sudah diinstal menggunakan Git, buka terminal pada direktori aplikasi.
+
+Periksa perubahan lokal terlebih dahulu:
+
+```bash
+git status
+```
+
+Ambil informasi versi terbaru:
+
+```bash
+git fetch origin
+```
+
+Perbarui aplikasi dari branch utama:
+
+```bash
+git pull --ff-only origin main
+```
+
+Opsi `--ff-only` mencegah Git membuat merge commit otomatis jika riwayat lokal dan repository resmi berbeda.
+
+### 2. Pembaruan Menggunakan ZIP
+
+Jika menggunakan instalasi ZIP:
+
+1. Kunjungi repository resmi Attendly.
+2. Buka halaman Releases jika tersedia.
+3. Unduh paket versi terbaru.
+4. Cadangkan database dan konfigurasi aplikasi.
+5. Ekstrak paket pembaruan.
+6. Terapkan file terbaru sesuai petunjuk rilis.
+7. Jalankan migrasi database apabila disertakan dalam rilis.
+
+Repository:
+
+https://github.com/Achil12/Attendly
+
+Halaman Releases:
+
+https://github.com/Achil12/Attendly/releases
+
+### 3. Hal yang Perlu Diperhatikan
+
+Sebelum melakukan pembaruan:
+
+- Cadangkan database.
+- Cadangkan file konfigurasi.
+- Pastikan tidak ada perubahan lokal yang belum disimpan.
+- Periksa catatan rilis.
+- Perhatikan perubahan struktur database.
+- Jangan menimpa konfigurasi pribadi tanpa membuat cadangan.
+
+**Penting:** Pembaruan aplikasi tidak selalu berarti database harus diinstal ulang. Ikuti instruksi migrasi database pada setiap rilis.
+
+---
+
+## Kontribusi Komunitas
+
+Attendly terbuka terhadap kontribusi komunitas yang ingin membantu meningkatkan kualitas aplikasi.
+
+Kontribusi dapat berupa:
+
+- Pelaporan bug.
+- Saran fitur.
+- Perbaikan dokumentasi.
+- Peningkatan antarmuka.
+- Optimasi kode.
+- Peningkatan performa.
+- Perbaikan keamanan.
+
+### Ketentuan Kontribusi
+
+Repository utama Attendly dikelola oleh pemilik proyek.
+
+Setiap kontributor dapat mengembangkan perubahan pada repository hasil Fork masing-masing.
+
+**Perubahan dari kontributor tidak otomatis diterapkan ke repository resmi Attendly.**
+
+Seluruh kontribusi harus melalui proses Pull Request dan peninjauan sebelum dapat diterima.
+
+### Cara Berkontribusi
+
+**1. Fork Repository**
+
+Kunjungi repository Attendly:
+
+https://github.com/Achil12/Attendly
+
+Klik tombol **Fork** untuk membuat salinan repository ke akun GitHub masing-masing.
+
+**2. Clone Repository Fork**
+
+Ganti `USERNAME` dengan username GitHub milik kontributor.
+
+```bash
+git clone https://github.com/USERNAME/Attendly.git
+```
+
+Masuk ke direktori:
+
+```bash
+cd Attendly
+```
+
+**3. Tambahkan Repository Resmi sebagai Upstream**
+
+```bash
+git remote add upstream https://github.com/Achil12/Attendly.git
+```
+
+**4. Buat Branch Baru**
+
+```bash
+git checkout -b feature/nama-fitur
+```
+
+**5. Lakukan Perubahan**
+
+Kerjakan perubahan pada repository hasil Fork, bukan langsung pada repository utama.
+
+**6. Commit Perubahan**
+
+```bash
+git add .
+git commit -m "Add: deskripsi perubahan"
+```
+
+**7. Push ke Repository Fork**
+
+```bash
+git push origin feature/nama-fitur
+```
+
+**8. Ajukan Pull Request**
+
+Buka repository hasil Fork di GitHub.
+
+Pilih **Compare & Pull Request**, kemudian ajukan perubahan ke branch `main` repository resmi Attendly.
+
+**9. Proses Peninjauan**
+
+Pemilik repository akan meninjau perubahan yang diajukan.
+
+Perubahan hanya akan diterapkan apabila disetujui dan digabungkan oleh pemilik repository atau pihak yang memiliki izin.
+
+### Pembaruan Repository Fork
+
+Untuk menyinkronkan repository Fork dengan repository resmi:
+
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main
+```
+
+Dengan mekanisme ini, kontribusi komunitas tetap terpisah dari repository utama sampai pemilik proyek menyetujui Pull Request.
+
+---
+
+## Pengelolaan Repository Resmi
+
+Repository resmi Attendly dikelola oleh pemilik proyek.
+
+Pembaruan aplikasi, perubahan kode, dokumentasi, dan publikasi versi resmi dilakukan melalui repository utama.
+
+### Prosedur Update oleh Pemilik Repository
+
+Untuk mempublikasikan perubahan terbaru dari komputer lokal:
+
+**1. Masuk ke direktori Attendly**
+
+```bash
+cd /path/to/Attendly
+```
+
+**2. Periksa status repository**
+
+```bash
+git status
+```
+
+**3. Tambahkan perubahan**
+
+```bash
+git add .
+```
+
+**4. Buat commit**
+
+```bash
+git commit -m "Update: deskripsi pembaruan"
+```
+
+**5. Sinkronkan repository**
+
+```bash
+git pull --rebase origin main
+```
+
+**6. Publikasikan perubahan**
+
+```bash
+git push origin main
+```
+
+Setelah berhasil, perubahan akan tersedia pada repository resmi Attendly.
+
+### Membuat Release Baru
+
+Untuk menerbitkan versi resmi:
+
+1. Buka repository Attendly.
+2. Pilih menu **Releases**.
+3. Klik **Create a new release**.
+4. Buat tag versi, misalnya `v1.0.0`.
+5. Isi judul dan catatan perubahan.
+6. Lampirkan paket ZIP jika diperlukan.
+7. Publikasikan release.
+
+Contoh penamaan versi:
+
+| Versi | Keterangan |
 |---|---|
-| Authentication | Implemented |
-| Registration | Implemented |
-| Dashboard | Implemented |
-| Employee Management | Implemented |
-| Department Management | In Development |
-| Position Management | In Development |
-| Work Schedule Management | In Development |
-| Office Location Management | In Development |
-| Attendance Management | In Development |
-| Leave Management | In Development |
-| Reports | In Development |
-| Multi-Tenant Architecture | Implemented |
-| RFID Hardware Integration | Planned |
+| v1.0.0 | Rilis awal |
+| v1.1.0 | Penambahan fitur |
+| v1.1.1 | Perbaikan bug |
+| v2.0.0 | Pembaruan besar |
 
-*Module status is indicative and should be updated as development progresses.*
+### Kebijakan Repository
+
+- Repository utama merupakan sumber resmi aplikasi Attendly.
+- Pemilik repository memiliki kendali atas pembaruan resmi.
+- Kontribusi komunitas dilakukan melalui Fork dan Pull Request.
+- Pull Request harus ditinjau sebelum digabungkan.
+- Kontributor tidak memiliki akses langsung untuk mengubah branch utama kecuali diberikan izin khusus.
+- Setiap rilis resmi diterbitkan melalui repository utama.
 
 ---
 
-## Roadmap
+## Komunitas dan Dukungan
 
-Future development plans include:
+Temukan Attendly melalui GitHub:
 
-- [ ] Complete all employee management modules.
-- [ ] Improve attendance monitoring.
-- [ ] Complete work schedule management.
-- [ ] Improve attendance reporting and exports.
-- [ ] Complete leave approval workflows.
-- [ ] Integrate ESP32 with RFID readers.
-- [ ] Implement real-time RFID attendance recording.
-- [ ] Improve dashboard analytics.
-- [ ] Add notification capabilities.
-- [ ] Improve mobile responsiveness.
-- [ ] Strengthen production deployment and security.
-- [ ] Expand system integrations.
-
----
-
-## Screenshots
-
-Application screenshots will be added here as the interface and modules are finalized.
-
-Suggested documentation:
-
-```text
-docs/
-└── screenshots/
-    ├── login.png
-    ├── dashboard.png
-    ├── employees.png
-    ├── attendance.png
-    ├── schedules.png
-    └── reports.png
-```
-
----
-
-## Contributing
-
-Contributions, suggestions, and improvements are welcome.
-
-To contribute:
-
-1. Fork this repository.
-2. Create a feature branch.
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-3. Make your changes.
-4. Commit your changes.
-
-```bash
-git commit -m "Add: your feature description"
-```
-
-5. Push your branch.
-
-```bash
-git push origin feature/your-feature-name
-```
-
-6. Open a Pull Request.
-
-Please ensure your changes are properly tested and documented.
-
-## Community & Support
-
-If you find Attendly useful, consider supporting the project.
-
-- **GitHub Repository:** https://github.com/Achil12/Attendly
+- **Repository:** https://github.com/Achil12/Attendly
 - **Issues:** https://github.com/Achil12/Attendly/issues
 - **Pull Requests:** https://github.com/Achil12/Attendly/pulls
 - **Discussions:** https://github.com/Achil12/Attendly/discussions
+- **Releases:** https://github.com/Achil12/Attendly/releases
 
-For bug reports, feature requests, or technical questions, please use GitHub Issues.
+Jika menemukan kendala atau memiliki ide, silakan sampaikan melalui GitHub Issues.
+
+## Lisensi
+
+Informasi lisensi proyek mengikuti berkas `LICENSE` yang tersedia di repository Attendly.
 
 ## Credits
 
-Attendly is developed as a web-based employee attendance management project.
+Attendly dibuat dengan memanfaatkan berbagai teknologi dan proyek open-source.
 
-Special thanks to the open-source communities and developers behind the technologies used in this project.
-
-## License
-
-Please refer to the repository's `LICENSE` file for licensing information.
-
-If no license has been added yet, the project remains subject to the default copyright rules.
+Terima kasih kepada seluruh pengembang dan komunitas open-source yang telah berkontribusi dalam menyediakan teknologi untuk pengembangan aplikasi web.
 
 ---
 
 <p align="center">
   <strong>Attendly — Your Personal Attendance</strong>
   <br>
-  Making attendance management smarter, simpler, and more organized.
+  Sistem manajemen kehadiran yang lebih mudah, modern, dan terintegrasi.
   <br><br>
-  Made with ❤️ for better workforce management.
+  Dibuat dengan ❤️ untuk pengelolaan kehadiran yang lebih baik.
   <br><br>
-  <a href="https://github.com/Achil12/Attendly">GitHub Repository</a>
+  <a href="https://github.com/Achil12/Attendly">
+    Kunjungi Repository Attendly
+  </a>
 </p>
