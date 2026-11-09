@@ -12,6 +12,7 @@ config/config.php
 uploads/
 storage/uploads/
 public/uploads/
+superadmin/
 
 # File backup database
 *.sql
