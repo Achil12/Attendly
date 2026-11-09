@@ -1,7 +1,7 @@
 # Attendly — Your Personal Attendance
 
 <p align="center">
-  <img src="assets/images/logo.png" alt="Attendly Logo" width="180">
+  <img src="img/logo Attendly.png" alt="Attendly Logo" width="180">
 </p>
 
 <p align="center">
