@@ -187,7 +187,7 @@ Attendly dibangun menggunakan teknologi web yang umum digunakan untuk pengembang
 | Backend | PHP |
 | Database | MySQL |
 | Database Access | PDO |
-| Web Server | Apache |
+| Web Server | Nginx |
 | Version Control | Git |
 | Repository | GitHub |
 | Hardware Integration | ESP32 & RFID |
@@ -660,6 +660,10 @@ Temukan Attendly melalui GitHub:
 - **Pull Requests:** https://github.com/Achil12/Attendly/pulls
 - **Discussions:** https://github.com/Achil12/Attendly/discussions
 - **Releases:** https://github.com/Achil12/Attendly/releases
+- **Donasi**
+    * https://tako.id/sikecilmanja
+    * https://saweria.co/Irfanem
+    * <img src="dukungan/qris.png" alt="qris" width="100%">
 
 Jika menemukan kendala atau memiliki ide, silakan sampaikan melalui GitHub Issues.
 
@@ -686,3 +690,6 @@ Terima kasih kepada seluruh pengembang dan komunitas open-source yang telah berk
     Kunjungi Repository Attendly
   </a>
 </p>
+
+##Update Senin,20261109
+- **Sedang ada pengembangan untuk versi mobile, jika sudah selesai link akan diupdate disini**
