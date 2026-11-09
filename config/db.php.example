@@ -18,7 +18,7 @@ define('DB_PASS', '');
 date_default_timezone_set('Asia/Jakarta');
 
 // Mode aplikasi
-define('APP_ENV', 'development');
+//define('APP_ENV', 'development');
 
 // Koneksi PDO
 try {
