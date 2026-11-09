@@ -691,5 +691,7 @@ Terima kasih kepada seluruh pengembang dan komunitas open-source yang telah berk
   </a>
 </p>
 
-##Update Senin,20261109
+---
+
+## Update Senin,20261109
 - **Sedang ada pengembangan untuk versi mobile, jika sudah selesai link akan diupdate disini**
