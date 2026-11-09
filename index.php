@@ -1,4 +1,113 @@
 
+<?php
+/**
+ * Attendly
+ * Public Landing Page
+ * Database Connected
+ */
+
+date_default_timezone_set('Asia/Jakarta');
+
+$stats = [
+    'employees' => '—',
+    'attendance' => '—',
+    'late' => '—',
+    'leave' => '—'
+];
+
+$dbConnected = false;
+
+try {
+    require_once __DIR__ . '/config/db.php';
+
+    if (isset($pdo) && $pdo instanceof PDO) {
+        $dbConnected = true;
+
+        // Total karyawan aktif dari perusahaan aktif.
+        $stmt = $pdo->query("
+            SELECT COUNT(*)
+            FROM employees e
+            INNER JOIN companies c
+                ON c.id = e.company_id
+            WHERE e.status = 'active'
+              AND c.status = 'active'
+        ");
+
+        $stats['employees'] = number_format(
+            (int) $stmt->fetchColumn(),
+            0,
+            ',',
+            '.'
+        );
+
+        // Total kehadiran hari ini.
+        $stmt = $pdo->query("
+            SELECT COUNT(*)
+            FROM attendances a
+            INNER JOIN companies c
+                ON c.id = a.company_id
+            WHERE a.attendance_date = CURDATE()
+              AND a.status IN ('hadir', 'terlambat')
+              AND c.status = 'active'
+        ");
+
+        $stats['attendance'] = number_format(
+            (int) $stmt->fetchColumn(),
+            0,
+            ',',
+            '.'
+        );
+
+        // Total keterlambatan hari ini.
+        $stmt = $pdo->query("
+            SELECT COUNT(*)
+            FROM attendances a
+            INNER JOIN companies c
+                ON c.id = a.company_id
+            WHERE a.attendance_date = CURDATE()
+              AND a.status = 'terlambat'
+              AND c.status = 'active'
+        ");
+
+        $stats['late'] = number_format(
+            (int) $stmt->fetchColumn(),
+            0,
+            ',',
+            '.'
+        );
+
+        // Pengajuan izin/cuti yang masih menunggu.
+        $stmt = $pdo->query("
+            SELECT COUNT(*)
+            FROM leave_requests lr
+            INNER JOIN companies c
+                ON c.id = lr.company_id
+            WHERE lr.status = 'pending'
+              AND c.status = 'active'
+        ");
+
+        $stats['leave'] = number_format(
+            (int) $stmt->fetchColumn(),
+            0,
+            ',',
+            '.'
+        );
+    }
+
+} catch (Throwable $e) {
+    error_log('[Attendly Landing Page] ' . $e->getMessage());
+    $dbConnected = false;
+}
+
+function e($value): string
+{
+    return htmlspecialchars(
+        (string) $value,
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,15 +115,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#101b35">
     <meta name="description" content="Attendly adalah platform manajemen absensi dan kehadiran karyawan modern dengan GPS, RFID, laporan, dan pengelolaan jadwal kerja.">
+
     <title>Attendly - Smart Attendance Management System</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
@@ -54,10 +159,8 @@
             max-width: 1160px;
         }
 
-        /* NAVBAR */
-
         .navbar {
-            background: rgba(255,255,255,.94);
+            background: rgba(255,255,255,.95);
             backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(230,235,245,.8);
             padding: 15px 0;
@@ -72,6 +175,10 @@
             font-size: 22px;
             font-weight: 900;
             letter-spacing: -1px;
+        }
+
+        .navbar-brand:hover {
+            color: var(--dark);
         }
 
         .brand-icon {
@@ -95,7 +202,6 @@
             font-size: 12px;
             font-weight: 600;
             padding: 10px 13px !important;
-            transition: .2s;
         }
 
         .navbar-nav .nav-link:hover {
@@ -132,8 +238,6 @@
             border-color: var(--dark);
         }
 
-        /* HERO */
-
         .hero {
             position: relative;
             overflow: hidden;
@@ -144,26 +248,26 @@
                 #fbfcff;
         }
 
-        .hero::before {
+        .hero::before,
+        .hero::after {
             content: "";
             position: absolute;
-            width: 450px;
-            height: 450px;
-            right: -220px;
-            top: -170px;
             border: 1px solid rgba(66,104,245,.09);
             border-radius: 50%;
         }
 
+        .hero::before {
+            width: 450px;
+            height: 450px;
+            right: -220px;
+            top: -170px;
+        }
+
         .hero::after {
-            content: "";
-            position: absolute;
             width: 320px;
             height: 320px;
             right: -155px;
             top: -105px;
-            border: 1px solid rgba(66,104,245,.09);
-            border-radius: 50%;
         }
 
         .hero-content {
@@ -184,10 +288,6 @@
             font-weight: 800;
             letter-spacing: .3px;
             margin-bottom: 24px;
-        }
-
-        .hero-badge i {
-            font-size: 11px;
         }
 
         .hero h1 {
@@ -228,6 +328,7 @@
             margin-top: 30px;
             color: var(--muted);
             font-size: 10px;
+            flex-wrap: wrap;
         }
 
         .hero-note span {
@@ -240,8 +341,6 @@
             color: var(--green);
         }
 
-        /* DASHBOARD PREVIEW */
-
         .dashboard-scene {
             position: relative;
             z-index: 2;
@@ -251,7 +350,7 @@
         .dashboard-window {
             position: relative;
             background: white;
-            border: 1px solid #e9edf5;
+            border: 1px solid var(--border);
             border-radius: 17px;
             padding: 17px;
             box-shadow: 0 30px 75px rgba(30,51,100,.14);
@@ -359,6 +458,7 @@
             padding: 10px;
             border-top: 1px solid #f0f2f6;
             font-size: 8px;
+            gap: 5px;
         }
 
         .preview-person {
@@ -378,6 +478,7 @@
             background: #edf2ff;
             color: var(--primary);
             font-size: 8px;
+            flex-shrink: 0;
         }
 
         .preview-status {
@@ -445,8 +546,6 @@
             gap: 8px;
         }
 
-        /* TRUST STRIP */
-
         .trust-strip {
             background: white;
             border-bottom: 1px solid var(--border);
@@ -467,14 +566,11 @@
             font-size: 13px;
             font-weight: 800;
             text-align: center;
-            letter-spacing: -.3px;
         }
 
         .trust-item i {
             margin-right: 5px;
         }
-
-        /* SECTION GENERAL */
 
         .section {
             padding: 95px 0;
@@ -512,8 +608,6 @@
             max-width: 570px;
             margin: 13px auto 0;
         }
-
-        /* FEATURES */
 
         .feature-card {
             height: 100%;
@@ -561,8 +655,6 @@
         .feature-red { background: #ffecec; color: #e35b65; }
         .feature-cyan { background: #e7f8fa; color: #159aa5; }
 
-        /* HOW IT WORKS */
-
         .step-card {
             text-align: center;
             padding: 15px 20px;
@@ -594,8 +686,6 @@
             font-size: 11px;
             line-height: 1.8;
         }
-
-        /* HIGHLIGHT */
 
         .highlight-box {
             background: var(--dark);
@@ -681,8 +771,6 @@
             font-weight: 800;
         }
 
-        /* CTA */
-
         .cta-section {
             padding: 85px 0;
             background: linear-gradient(120deg, #3152dc, #5277ff);
@@ -712,8 +800,6 @@
         .cta-section .btn-outline-light {
             padding: 14px 24px;
         }
-
-        /* FOOTER */
 
         footer {
             background: #0c162c;
@@ -793,8 +879,6 @@
             color: white;
         }
 
-        /* ANIMATION */
-
         .reveal {
             opacity: 0;
             transform: translateY(25px);
@@ -852,11 +936,6 @@
                 font-size: 12px;
             }
 
-            .hero-note {
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-
             .dashboard-window {
                 transform: none;
                 padding: 12px;
@@ -898,7 +977,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
+            *,
+            *::before,
+            *::after {
                 scroll-behavior: auto !important;
                 animation-duration: .01ms !important;
                 transition-duration: .01ms !important;
@@ -909,7 +990,7 @@
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- NAVBAR -->
 
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
@@ -921,9 +1002,14 @@
             Attendly
         </a>
 
-        <button class="navbar-toggler border-0 shadow-none" type="button"
-                data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                aria-controls="mainNavbar" aria-expanded="false" aria-label="Buka navigasi">
+        <button class="navbar-toggler border-0 shadow-none"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Buka navigasi">
+
             <i class="fa-solid fa-bars fs-5"></i>
         </button>
 
@@ -933,43 +1019,55 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#home">Beranda</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#fitur">Fitur</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#cara-kerja">Cara Kerja</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#keunggulan">Keunggulan</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#kontak">Kontak</a>
                 </li>
             </ul>
 
             <div class="navbar-actions d-flex gap-2">
-                <a href="login.php" class="btn btn-outline-dark">Masuk</a>
-                <a href="#kontak" class="btn btn-primary">Hubungi Kami <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <a href="login.php" class="btn btn-outline-dark">
+                    Masuk
+                </a>
+
+                <a href="#kontak" class="btn btn-primary">
+                    Hubungi Kami
+                    <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
             </div>
 
         </div>
     </div>
 </nav>
 
-<!-- ================= HERO ================= -->
+<!-- HERO -->
 
 <section class="hero" id="home">
     <div class="container">
         <div class="row align-items-center">
 
             <div class="col-lg-6 hero-content">
+
                 <div class="hero-badge">
                     <i class="fa-solid fa-sparkles"></i>
                     SMART ATTENDANCE MANAGEMENT SYSTEM
                 </div>
 
                 <h1>
-                    Kelola Kehadiran Karyawan Jadi <span>Lebih Mudah.</span>
+                    Kelola Kehadiran Karyawan Jadi
+                    <span>Lebih Mudah.</span>
                 </h1>
 
                 <p class="hero-description">
@@ -979,151 +1077,302 @@
                 </p>
 
                 <div class="hero-actions">
+
                     <a href="#fitur" class="btn btn-primary">
-                        Jelajahi Fitur <i class="fa-solid fa-arrow-right ms-2"></i>
+                        Jelajahi Fitur
+                        <i class="fa-solid fa-arrow-right ms-2"></i>
                     </a>
 
                     <a href="#cara-kerja" class="btn btn-outline-dark">
-                        <i class="fa-solid fa-circle-play me-2"></i> Pelajari Sistem
+                        <i class="fa-solid fa-circle-play me-2"></i>
+                        Pelajari Sistem
                     </a>
+
                 </div>
 
                 <div class="hero-note">
-                    <span><i class="fa-solid fa-circle-check"></i> Akses berbasis web</span>
-                    <span><i class="fa-solid fa-circle-check"></i> Multi metode absensi</span>
-                    <span><i class="fa-solid fa-circle-check"></i> Laporan terpusat</span>
+                    <span>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Akses berbasis web
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Multi metode absensi
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Laporan terpusat
+                    </span>
                 </div>
+
             </div>
 
-            <!-- PREVIEW DASHBOARD -->
+            <!-- DASHBOARD PREVIEW -->
+
             <div class="col-lg-6">
+
                 <div class="dashboard-scene">
 
                     <div class="dashboard-window">
 
                         <div class="window-header">
+
                             <div class="window-dots">
-                                <span></span><span></span><span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
 
-                            <div class="window-title">ATTENDLY DASHBOARD</div>
+                            <div class="window-title">
+                                ATTENDLY DASHBOARD
+                            </div>
 
                             <div class="window-profile">
                                 <i class="fa-solid fa-user"></i>
                             </div>
+
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
+
                             <div>
-                                <div class="preview-heading">Dashboard Overview</div>
-                                <div class="preview-subheading">Ringkasan aktivitas kehadiran</div>
+                                <div class="preview-heading">
+                                    Dashboard Overview
+                                </div>
+
+                                <div class="preview-subheading">
+                                    Ringkasan aktivitas kehadiran
+                                </div>
                             </div>
 
                             <span class="badge text-bg-primary" style="font-size:8px;">
-                                Live Preview
+                                Database
                             </span>
+
                         </div>
 
                         <div class="row g-2">
+
                             <div class="col-6">
                                 <div class="preview-stat">
-                                    <div class="preview-stat-icon" style="background:#edf2ff;color:#4268f5;">
+
+                                    <div class="preview-stat-icon"
+                                         style="background:#edf2ff;color:#4268f5;">
                                         <i class="fa-solid fa-users"></i>
                                     </div>
-                                    <div class="preview-stat-label">Total Karyawan</div>
-                                    <div class="preview-stat-number">248</div>
+
+                                    <div class="preview-stat-label">
+                                        Total Karyawan Aktif
+                                    </div>
+
+                                    <div class="preview-stat-number">
+                                        <?= e($stats['employees']) ?>
+                                    </div>
+
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="preview-stat">
-                                    <div class="preview-stat-icon" style="background:#e8f8ef;color:#19ad78;">
+
+                                    <div class="preview-stat-icon"
+                                         style="background:#e8f8ef;color:#19ad78;">
                                         <i class="fa-solid fa-user-check"></i>
                                     </div>
-                                    <div class="preview-stat-label">Hadir Hari Ini</div>
-                                    <div class="preview-stat-number">231</div>
+
+                                    <div class="preview-stat-label">
+                                        Kehadiran Hari Ini
+                                    </div>
+
+                                    <div class="preview-stat-number">
+                                        <?= e($stats['attendance']) ?>
+                                    </div>
+
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="preview-stat">
-                                    <div class="preview-stat-icon" style="background:#fff4e5;color:#e99a29;">
+
+                                    <div class="preview-stat-icon"
+                                         style="background:#fff4e5;color:#e99a29;">
                                         <i class="fa-solid fa-clock"></i>
                                     </div>
-                                    <div class="preview-stat-label">Terlambat</div>
-                                    <div class="preview-stat-number">12</div>
+
+                                    <div class="preview-stat-label">
+                                        Terlambat Hari Ini
+                                    </div>
+
+                                    <div class="preview-stat-number">
+                                        <?= e($stats['late']) ?>
+                                    </div>
+
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="preview-stat">
-                                    <div class="preview-stat-icon" style="background:#f2eaff;color:#9463d4;">
+
+                                    <div class="preview-stat-icon"
+                                         style="background:#f2eaff;color:#9463d4;">
                                         <i class="fa-solid fa-envelope"></i>
                                     </div>
-                                    <div class="preview-stat-label">Izin / Cuti</div>
-                                    <div class="preview-stat-number">5</div>
+
+                                    <div class="preview-stat-label">
+                                        Pengajuan Menunggu
+                                    </div>
+
+                                    <div class="preview-stat-number">
+                                        <?= e($stats['leave']) ?>
+                                    </div>
+
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="preview-table">
+
                             <div class="preview-table-head d-flex justify-content-between">
-                                <span>AKTIVITAS KARYAWAN</span>
+                                <span>STATISTIK KEHADIRAN</span>
                                 <span>HARI INI</span>
                             </div>
 
                             <div class="preview-table-row">
                                 <div class="preview-person">
-                                    <div class="preview-avatar">AS</div>
-                                    Andi Saputra
+                                    <div class="preview-avatar">
+                                        <i class="fa-solid fa-database"></i>
+                                    </div>
+                                    Data karyawan
                                 </div>
-                                <span>07:55</span>
-                                <span class="preview-status green">Hadir</span>
+
+                                <span><?= e($stats['employees']) ?></span>
+
+                                <span class="preview-status green">
+                                    Terdaftar
+                                </span>
                             </div>
 
                             <div class="preview-table-row">
                                 <div class="preview-person">
-                                    <div class="preview-avatar">SR</div>
-                                    Siti Rahmawati
+                                    <div class="preview-avatar">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </div>
+                                    Kehadiran
                                 </div>
-                                <span>08:03</span>
-                                <span class="preview-status yellow">Terlambat</span>
+
+                                <span><?= e($stats['attendance']) ?></span>
+
+                                <span class="preview-status green">
+                                    Tercatat
+                                </span>
                             </div>
 
                             <div class="preview-table-row">
                                 <div class="preview-person">
-                                    <div class="preview-avatar">BS</div>
-                                    Budi Santoso
+                                    <div class="preview-avatar">
+                                        <i class="fa-solid fa-clock"></i>
+                                    </div>
+                                    Keterlambatan
                                 </div>
-                                <span>07:48</span>
-                                <span class="preview-status green">Hadir</span>
+
+                                <span><?= e($stats['late']) ?></span>
+
+                                <span class="preview-status yellow">
+                                    Dipantau
+                                </span>
                             </div>
+
                         </div>
 
-                        <div class="text-end mt-2" style="font-size:7px;color:#9aa4b5;">
-                            Ilustrasi dashboard Attendly
+                        <div class="text-end mt-2"
+                             style="font-size:7px;color:#9aa4b5;">
+                            Statistik agregat dari database Attendly
                         </div>
 
                     </div>
 
                     <div class="floating-card floating-attendance">
+
                         <div class="floating-icon">
                             <i class="fa-solid fa-user-check"></i>
                         </div>
+
                         <div>
-                            <div class="floating-title">Absensi Berhasil</div>
-                            <div class="floating-subtitle">Data tercatat pada sistem</div>
+                            <div class="floating-title">
+                                Absensi Digital
+                            </div>
+
+                            <div class="floating-subtitle">
+                                Pencatatan terintegrasi
+                            </div>
                         </div>
+
                     </div>
 
                     <div class="floating-card floating-gps">
-                        <i class="fa-solid fa-location-dot" style="color:#19ad78;"></i>
+
+                        <i class="fa-solid fa-location-dot"
+                           style="color:#19ad78;"></i>
+
                         <div>
-                            <div class="floating-title">GPS Location</div>
-                            <div class="floating-subtitle">Ilustrasi validasi lokasi</div>
+                            <div class="floating-title">
+                                GPS Location
+                            </div>
+
+                            <div class="floating-subtitle">
+                                Validasi lokasi
+                            </div>
                         </div>
+
                     </div>
 
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- TRUST STRIP -->
+
+<section class="trust-strip">
+    <div class="container">
+
+        <div class="trust-text mb-4">
+            Satu platform untuk berbagai kebutuhan manajemen kehadiran
+        </div>
+
+        <div class="row g-3 align-items-center">
+
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fa-solid fa-building"></i>
+                    Perusahaan
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fa-solid fa-store"></i>
+                    Retail & Bisnis
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fa-solid fa-hospital"></i>
+                    Institusi
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    Pendidikan
                 </div>
             </div>
 
@@ -1131,102 +1380,130 @@
     </div>
 </section>
 
-<!-- ================= TRUST STRIP ================= -->
-
-<section class="trust-strip">
-    <div class="container">
-        <div class="trust-text mb-4">Satu platform untuk berbagai kebutuhan manajemen kehadiran</div>
-
-        <div class="row g-3 align-items-center">
-            <div class="col-6 col-md-3">
-                <div class="trust-item"><i class="fa-solid fa-building"></i> Perusahaan</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="trust-item"><i class="fa-solid fa-store"></i> Retail & Bisnis</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="trust-item"><i class="fa-solid fa-hospital"></i> Institusi</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="trust-item"><i class="fa-solid fa-graduation-cap"></i> Pendidikan</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================= FITUR ================= -->
+<!-- FITUR -->
 
 <section class="section" id="fitur">
     <div class="container">
 
         <div class="text-center mb-5 reveal">
-            <span class="section-tag">Fitur Attendly</span>
-            <h2 class="section-heading">Semua Kebutuhan Absensi<br>Dalam Satu Platform</h2>
+
+            <span class="section-tag">
+                Fitur Attendly
+            </span>
+
+            <h2 class="section-heading">
+                Semua Kebutuhan Absensi<br>
+                Dalam Satu Platform
+            </h2>
+
             <p class="section-description">
                 Kelola seluruh aktivitas kehadiran karyawan dengan sistem
                 yang terstruktur, fleksibel, dan mudah digunakan.
             </p>
+
         </div>
 
         <div class="row g-3">
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-blue">
                         <i class="fa-solid fa-fingerprint"></i>
                     </div>
+
                     <h4>Absensi Digital</h4>
-                    <p>Pencatatan check-in dan check-out secara digital untuk memudahkan pengelolaan kehadiran karyawan.</p>
+
+                    <p>
+                        Pencatatan check-in dan check-out secara digital
+                        untuk memudahkan pengelolaan kehadiran karyawan.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-green">
                         <i class="fa-solid fa-location-dot"></i>
                     </div>
+
                     <h4>Validasi GPS</h4>
-                    <p>Atur lokasi kerja dan radius absensi untuk mendukung validasi lokasi karyawan.</p>
+
+                    <p>
+                        Atur lokasi kerja dan radius absensi untuk
+                        mendukung validasi lokasi karyawan.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-orange">
                         <i class="fa-solid fa-id-card"></i>
                     </div>
+
                     <h4>Integrasi RFID</h4>
-                    <p>Dukung penggunaan kartu RFID sebagai salah satu metode identifikasi dan pencatatan kehadiran.</p>
+
+                    <p>
+                        Dukung penggunaan kartu RFID sebagai salah satu
+                        metode identifikasi dan pencatatan kehadiran.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-purple">
                         <i class="fa-solid fa-calendar-days"></i>
                     </div>
+
                     <h4>Manajemen Jadwal</h4>
-                    <p>Kelola shift, jam kerja, hari kerja, dan jadwal karyawan secara lebih terorganisir.</p>
+
+                    <p>
+                        Kelola shift, jam kerja, hari kerja, dan jadwal
+                        karyawan secara lebih terorganisir.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-red">
                         <i class="fa-solid fa-envelope-open-text"></i>
                     </div>
+
                     <h4>Izin & Cuti</h4>
-                    <p>Kelola pengajuan izin, sakit, dan cuti melalui proses administrasi yang terpusat.</p>
+
+                    <p>
+                        Kelola pengajuan izin, sakit, dan cuti melalui
+                        proses administrasi yang terpusat.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-4 reveal">
                 <div class="feature-card">
+
                     <div class="feature-icon feature-cyan">
                         <i class="fa-solid fa-chart-line"></i>
                     </div>
+
                     <h4>Laporan & Analitik</h4>
-                    <p>Pantau ringkasan kehadiran, keterlambatan, dan rekapitulasi absensi melalui laporan.</p>
+
+                    <p>
+                        Pantau ringkasan kehadiran, keterlambatan,
+                        dan rekapitulasi absensi melalui laporan.
+                    </p>
+
                 </div>
             </div>
 
@@ -1234,43 +1511,72 @@
     </div>
 </section>
 
-<!-- ================= CARA KERJA ================= -->
+<!-- CARA KERJA -->
 
 <section class="section section-light" id="cara-kerja">
     <div class="container">
 
         <div class="text-center mb-5 reveal">
-            <span class="section-tag">Cara Kerja</span>
-            <h2 class="section-heading">Sederhana, Cepat, dan Terorganisir</h2>
+
+            <span class="section-tag">
+                Cara Kerja
+            </span>
+
+            <h2 class="section-heading">
+                Sederhana, Cepat, dan Terorganisir
+            </h2>
+
             <p class="section-description">
                 Alur penggunaan Attendly dirancang agar proses pencatatan
                 kehadiran lebih mudah bagi karyawan maupun administrator.
             </p>
+
         </div>
 
         <div class="row g-4">
 
             <div class="col-md-4 reveal">
                 <div class="step-card">
+
                     <div class="step-number">01</div>
+
                     <h4>Data Karyawan</h4>
-                    <p>Administrator mendaftarkan karyawan, departemen, jabatan, serta jadwal kerja.</p>
+
+                    <p>
+                        Administrator mendaftarkan karyawan,
+                        departemen, jabatan, serta jadwal kerja.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-4 reveal">
                 <div class="step-card">
+
                     <div class="step-number">02</div>
+
                     <h4>Proses Absensi</h4>
-                    <p>Karyawan melakukan absensi menggunakan metode yang disediakan perusahaan.</p>
+
+                    <p>
+                        Karyawan melakukan absensi menggunakan
+                        metode yang disediakan perusahaan.
+                    </p>
+
                 </div>
             </div>
 
             <div class="col-md-4 reveal">
                 <div class="step-card">
+
                     <div class="step-number">03</div>
+
                     <h4>Laporan Kehadiran</h4>
-                    <p>Administrator memantau aktivitas dan mengelola laporan kehadiran secara terpusat.</p>
+
+                    <p>
+                        Administrator memantau aktivitas dan mengelola
+                        laporan kehadiran secara terpusat.
+                    </p>
+
                 </div>
             </div>
 
@@ -1278,76 +1584,136 @@
     </div>
 </section>
 
-<!-- ================= KEUNGGULAN ================= -->
+<!-- KEUNGGULAN -->
 
 <section class="section" id="keunggulan">
     <div class="container">
 
         <div class="highlight-box reveal">
+
             <div class="row align-items-center g-5">
 
                 <div class="col-lg-6">
-                    <span class="section-tag" style="background:#293d67;color:#a9bbff;">
+
+                    <span class="section-tag"
+                          style="background:#293d67;color:#a9bbff;">
                         Kenapa Attendly?
                     </span>
 
-                    <h3>Kontrol Kehadiran Lebih Baik, Administrasi Lebih Efisien.</h3>
+                    <h3>
+                        Kontrol Kehadiran Lebih Baik,
+                        Administrasi Lebih Efisien.
+                    </h3>
 
                     <p class="mt-3">
-                        Attendly dirancang sebagai pusat pengelolaan kehadiran
-                        yang membantu perusahaan menyederhanakan pekerjaan
-                        administratif dan mendapatkan gambaran aktivitas karyawan.
+                        Attendly dirancang sebagai pusat pengelolaan
+                        kehadiran yang membantu perusahaan menyederhanakan
+                        pekerjaan administratif dan mendapatkan gambaran
+                        aktivitas karyawan.
                     </p>
 
                     <div class="highlight-list">
-                        <span><i class="fa-solid fa-circle-check"></i> Pengelolaan terpusat</span>
-                        <span><i class="fa-solid fa-circle-check"></i> Akses berbasis web</span>
-                        <span><i class="fa-solid fa-circle-check"></i> Multi metode absensi</span>
-                        <span><i class="fa-solid fa-circle-check"></i> Laporan terstruktur</span>
-                        <span><i class="fa-solid fa-circle-check"></i> Pengaturan fleksibel</span>
-                        <span><i class="fa-solid fa-circle-check"></i> Tampilan responsif</span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Pengelolaan terpusat
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Akses berbasis web
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Multi metode absensi
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Laporan terstruktur
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Pengaturan fleksibel
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Tampilan responsif
+                        </span>
+
                     </div>
+
                 </div>
 
                 <div class="col-lg-6">
+
                     <div class="highlight-visual">
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
+
                             <div class="text-white fw-bold" style="font-size:12px;">
-                                <i class="fa-solid fa-chart-pie me-2" style="color:#7e9cff;"></i>
+                                <i class="fa-solid fa-chart-pie me-2"
+                                   style="color:#7e9cff;"></i>
                                 Attendance Overview
                             </div>
-                            <span class="badge" style="background:#284a79;color:#c7d8ff;font-size:8px;">
+
+                            <span class="badge"
+                                  style="background:#284a79;color:#c7d8ff;font-size:8px;">
                                 Dashboard
                             </span>
+
                         </div>
 
                         <div class="highlight-visual-item">
-                            <div class="highlight-visual-label">Manajemen Karyawan</div>
-                            <div class="highlight-visual-value">Terpusat</div>
+                            <div class="highlight-visual-label">
+                                Manajemen Karyawan
+                            </div>
+                            <div class="highlight-visual-value">
+                                Terpusat
+                            </div>
                         </div>
 
                         <div class="highlight-visual-item">
-                            <div class="highlight-visual-label">Pencatatan Kehadiran</div>
-                            <div class="highlight-visual-value">Digital</div>
+                            <div class="highlight-visual-label">
+                                Pencatatan Kehadiran
+                            </div>
+                            <div class="highlight-visual-value">
+                                Digital
+                            </div>
                         </div>
 
                         <div class="highlight-visual-item">
-                            <div class="highlight-visual-label">Pengelolaan Jadwal</div>
-                            <div class="highlight-visual-value">Fleksibel</div>
+                            <div class="highlight-visual-label">
+                                Pengelolaan Jadwal
+                            </div>
+                            <div class="highlight-visual-value">
+                                Fleksibel
+                            </div>
                         </div>
 
                         <div class="highlight-visual-item">
-                            <div class="highlight-visual-label">Laporan</div>
-                            <div class="highlight-visual-value">Terstruktur</div>
+                            <div class="highlight-visual-label">
+                                Laporan
+                            </div>
+                            <div class="highlight-visual-value">
+                                Terstruktur
+                            </div>
                         </div>
 
                         <div class="highlight-visual-item">
-                            <div class="highlight-visual-label">Integrasi</div>
-                            <div class="highlight-visual-value">Dapat Dikembangkan</div>
+                            <div class="highlight-visual-label">
+                                Integrasi
+                            </div>
+                            <div class="highlight-visual-value">
+                                Dapat Dikembangkan
+                            </div>
                         </div>
 
                     </div>
+
                 </div>
 
             </div>
@@ -1355,7 +1721,7 @@
     </div>
 </section>
 
-<!-- ================= CTA ================= -->
+<!-- CTA -->
 
 <section class="cta-section" id="kontak">
     <div class="container reveal">
@@ -1365,7 +1731,10 @@
             START WITH ATTENDLY
         </span>
 
-        <h2>Siap Mengelola Kehadiran<br>Dengan Cara yang Lebih Modern?</h2>
+        <h2>
+            Siap Mengelola Kehadiran<br>
+            Dengan Cara yang Lebih Modern?
+        </h2>
 
         <p>
             Mulai bangun sistem pengelolaan absensi yang lebih terstruktur
@@ -1373,19 +1742,24 @@
         </p>
 
         <div class="d-flex justify-content-center flex-wrap gap-2">
-            <a href="login.html" class="btn btn-light">
-                Masuk ke Sistem <i class="fa-solid fa-arrow-right ms-2"></i>
+
+            <a href="login.php" class="btn btn-light">
+                Masuk ke Sistem
+                <i class="fa-solid fa-arrow-right ms-2"></i>
             </a>
 
-            <a href="mailto:info@attendly.com" class="btn btn-outline-light">
-                <i class="fa-solid fa-envelope me-2"></i> Hubungi Kami
+            <a href="mailto:info@attendly.com"
+               class="btn btn-outline-light">
+                <i class="fa-solid fa-envelope me-2"></i>
+                Hubungi Kami
             </a>
+
         </div>
 
     </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
+<!-- FOOTER -->
 
 <footer>
     <div class="container">
@@ -1393,11 +1767,15 @@
         <div class="row g-4">
 
             <div class="col-lg-4 col-md-6">
+
                 <div class="footer-brand">
+
                     <span class="brand-icon">
                         <i class="fa-solid fa-fingerprint"></i>
                     </span>
+
                     Attendly
+
                 </div>
 
                 <p class="footer-description">
@@ -1407,15 +1785,33 @@
                 </p>
 
                 <div class="social-links mt-3">
-                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+
+                    <a href="#" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#" aria-label="LinkedIn">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+
+                    <a href="#" aria-label="WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+
                 </div>
+
             </div>
 
             <div class="col-lg-2 col-md-6">
-                <div class="footer-title">Navigasi</div>
+
+                <div class="footer-title">
+                    Navigasi
+                </div>
+
                 <div class="footer-links">
                     <a href="#home">Beranda</a>
                     <a href="#fitur">Fitur</a>
@@ -1423,10 +1819,15 @@
                     <a href="#keunggulan">Keunggulan</a>
                     <a href="#kontak">Kontak</a>
                 </div>
+
             </div>
 
             <div class="col-lg-3 col-md-6">
-                <div class="footer-title">Fitur Sistem</div>
+
+                <div class="footer-title">
+                    Fitur Sistem
+                </div>
+
                 <div class="footer-links">
                     <a href="#fitur">Absensi Digital</a>
                     <a href="#fitur">Validasi GPS</a>
@@ -1434,37 +1835,53 @@
                     <a href="#fitur">Manajemen Jadwal</a>
                     <a href="#fitur">Laporan Kehadiran</a>
                 </div>
+
             </div>
 
             <div class="col-lg-3 col-md-6">
-                <div class="footer-title">Informasi</div>
-                <div class="footer-links">
-                    <a href="mailto:info@attendly.com">info@attendly.com</a>
-                    <a href="mailto:support@attendly.com">Support</a>
-                    <a href="login.html">Login Administrator</a>
+
+                <div class="footer-title">
+                    Informasi
                 </div>
+
+                <div class="footer-links">
+                    <a href="mailto:info@attendly.com">
+                        info@attendly.com
+                    </a>
+
+                    <a href="mailto:support@attendly.com">
+                        Support
+                    </a>
+
+                    <a href="login.php">
+                        Login Administrator
+                    </a>
+                </div>
+
             </div>
 
         </div>
 
         <div class="footer-bottom">
-            <div>&copy; <span id="year"></span> Attendly. All rights reserved.</div>
-            <div>Smart Attendance Management System</div>
+
+            <div>
+                &copy; <?= date('Y') ?> Attendly. All rights reserved.
+            </div>
+
+            <div>
+                Smart Attendance Management System
+            </div>
+
         </div>
 
     </div>
 </footer>
 
-<!-- ================= JAVASCRIPT ================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Tahun otomatis
-    document.getElementById('year').textContent = new Date().getFullYear();
-
     // Navbar scroll effect
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const navbar = document.querySelector('.navbar');
 
         if (window.scrollY > 30) {
@@ -1474,21 +1891,27 @@
         }
     });
 
-    // Animasi saat section terlihat
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                revealObserver.unobserve(entry.target);
-            }
+    // Reveal animation
+    if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12
         });
-    }, {
-        threshold: 0.12
-    });
 
-    document.querySelectorAll('.reveal').forEach(element => {
-        revealObserver.observe(element);
-    });
+        document.querySelectorAll('.reveal').forEach(element => {
+            revealObserver.observe(element);
+        });
+    } else {
+        document.querySelectorAll('.reveal').forEach(element => {
+            element.classList.add('visible');
+        });
+    }
 
     // Tutup navbar mobile setelah klik menu
     document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {

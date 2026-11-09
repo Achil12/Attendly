@@ -5,7 +5,7 @@ require_once __DIR__ . '/../config/session.php';
 
 attendly_require_auth();
 
-$companyId = attendly_company_id();
+$companyId = (int) attendly_company_id();
 $csrfToken = attendly_csrf_token();
 
 $error = '';
@@ -31,7 +31,20 @@ function redirectSchedule($params = []) {
     exit;
 }
 
-/* SIMPAN JADWAL */
+function validScheduleTime($time) {
+    return is_string($time) && (bool) preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $time);
+}
+
+/*
+ * Kolom database work_schedules:
+ * dock_in, dock_out, break_start, break_end,
+ * late_tolerance_minutes, cross_day.
+ *
+ * Kolom schedule_days:
+ * schedule_id, day_of_week, is_working_day.
+ */
+
+/* PROSES FORM */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!attendly_verify_csrf($_POST['csrf_token'] ?? '')) {
         $error = 'Token keamanan tidak valid. Silakan muat ulang halaman.';
@@ -41,17 +54,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             if ($action === 'save') {
                 $id = (int) ($_POST['id'] ?? 0);
-                $name = trim($_POST['name'] ?? '');
-                $startTime = $_POST['start_time'] ?? '';
-                $endTime = $_POST['end_time'] ?? '';
-                $breakStart = !empty($_POST['break_start']) ? $_POST['break_start'] : null;
-                $breakEnd = !empty($_POST['break_end']) ? $_POST['break_end'] : null;
-                $gracePeriod = max(0, (int) ($_POST['grace_period'] ?? 0));
+                $name = trim((string) ($_POST['name'] ?? ''));
+                $startTime = trim((string) ($_POST['start_time'] ?? ''));
+                $endTime = trim((string) ($_POST['end_time'] ?? ''));
+                $breakStart = trim((string) ($_POST['break_start'] ?? ''));
+                $breakEnd = trim((string) ($_POST['break_end'] ?? ''));
+                $gracePeriod = max(0, min(180, (int) ($_POST['grace_period'] ?? 5)));
                 $status = $_POST['status'] ?? 'active';
                 $selectedDays = $_POST['days'] ?? [];
 
-                if ($name === '' || $startTime === '' || $endTime === '') {
-                    throw new Exception('Nama jadwal, jam masuk, dan jam pulang wajib diisi.');
+                if ($name === '') {
+                    throw new Exception('Nama jadwal wajib diisi.');
+                }
+
+                if (!validScheduleTime($startTime) || !validScheduleTime($endTime)) {
+                    throw new Exception('Jam masuk dan jam pulang harus diisi dengan format waktu yang benar.');
+                }
+
+                if (($breakStart === '') !== ($breakEnd === '')) {
+                    throw new Exception('Jam mulai dan selesai istirahat harus diisi bersamaan.');
+                }
+
+                if ($breakStart !== '' && (
+                    !validScheduleTime($breakStart) ||
+                    !validScheduleTime($breakEnd)
+                )) {
+                    throw new Exception('Format jam istirahat tidak valid.');
                 }
 
                 if (!in_array($status, ['active', 'inactive'], true)) {
@@ -59,13 +87,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $selectedDays = array_values(array_unique(array_filter(
-                    array_map('intval', $selectedDays),
+                    array_map('intval', is_array($selectedDays) ? $selectedDays : []),
                     fn($day) => $day >= 1 && $day <= 7
                 )));
+                sort($selectedDays);
 
                 if (!$selectedDays) {
                     throw new Exception('Pilih minimal satu hari kerja.');
                 }
+
+                $breakStartValue = $breakStart !== '' ? $breakStart : null;
+                $breakEndValue = $breakEnd !== '' ? $breakEnd : null;
+
+                // Jika jam pulang lebih kecil/sama dengan jam masuk,
+                // jadwal dianggap melewati tengah malam.
+                $crossDay = ($endTime <= $startTime) ? 1 : 0;
 
                 $pdo->beginTransaction();
 
@@ -74,33 +110,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         SELECT id
                         FROM work_schedules
                         WHERE id = ? AND company_id = ?
+                        FOR UPDATE
                     ");
                     $check->execute([$id, $companyId]);
 
-                    if (!$check->fetch()) {
-                        throw new Exception('Jadwal tidak ditemukan.');
+                    if (!$check->fetchColumn()) {
+                        throw new Exception('Jadwal tidak ditemukan atau bukan milik perusahaan ini.');
                     }
 
                     $stmt = $pdo->prepare("
                         UPDATE work_schedules
                         SET name = ?,
-                            start_time = ?,
-                            end_time = ?,
+                            dock_in = ?,
+                            dock_out = ?,
                             break_start = ?,
                             break_end = ?,
-                            grace_period = ?,
+                            late_tolerance_minutes = ?,
+                            cross_day = ?,
                             status = ?,
                             updated_at = NOW()
                         WHERE id = ? AND company_id = ?
                     ");
-
                     $stmt->execute([
                         $name,
                         $startTime,
                         $endTime,
-                        $breakStart,
-                        $breakEnd,
+                        $breakStartValue,
+                        $breakEndValue,
                         $gracePeriod,
+                        $crossDay,
                         $status,
                         $id,
                         $companyId
@@ -108,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $scheduleId = $id;
 
-                    // schedule_days tidak memiliki company_id
+                    // Hapus hari lama, kemudian masukkan pilihan terbaru.
                     $deleteDays = $pdo->prepare("
                         DELETE FROM schedule_days
                         WHERE schedule_id = ?
@@ -118,30 +156,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $successMessage = 'Jadwal kerja berhasil diperbarui.';
                 } else {
                     $stmt = $pdo->prepare("
-                        INSERT INTO work_schedules
-                        (
+                        INSERT INTO work_schedules (
                             company_id,
                             name,
-                            start_time,
-                            end_time,
+                            dock_in,
+                            dock_out,
                             break_start,
                             break_end,
-                            grace_period,
+                            late_tolerance_minutes,
+                            cross_day,
                             status,
                             created_at,
                             updated_at
-                        )
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
                     ");
-
                     $stmt->execute([
                         $companyId,
                         $name,
                         $startTime,
                         $endTime,
-                        $breakStart,
-                        $breakEnd,
+                        $breakStartValue,
+                        $breakEndValue,
                         $gracePeriod,
+                        $crossDay,
                         $status
                     ]);
 
@@ -149,10 +186,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $successMessage = 'Jadwal kerja berhasil ditambahkan.';
                 }
 
-                // schedule_days hanya menggunakan schedule_id dan day_of_week
+                // schedule_days tidak memiliki company_id.
+                // is_working_day wajib ditandai 1 untuk hari yang dipilih.
                 $insertDay = $pdo->prepare("
-                    INSERT INTO schedule_days (schedule_id, day_of_week)
-                    VALUES (?, ?)
+                    INSERT INTO schedule_days (schedule_id, day_of_week, is_working_day)
+                    VALUES (?, ?, 1)
                 ");
 
                 foreach ($selectedDays as $day) {
@@ -160,12 +198,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $pdo->commit();
-
                 redirectSchedule(['success' => $successMessage]);
             }
 
             if ($action === 'toggle') {
                 $id = (int) ($_POST['id'] ?? 0);
+
+                if ($id <= 0) {
+                    throw new Exception('ID jadwal tidak valid.');
+                }
 
                 $stmt = $pdo->prepare("
                     UPDATE work_schedules
@@ -178,13 +219,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
                 $stmt->execute([$id, $companyId]);
 
-                redirectSchedule([
-                    'success' => 'Status jadwal berhasil diperbarui.'
-                ]);
+                if ($stmt->rowCount() === 0) {
+                    $check = $pdo->prepare("
+                        SELECT id FROM work_schedules
+                        WHERE id = ? AND company_id = ?
+                    ");
+                    $check->execute([$id, $companyId]);
+
+                    if (!$check->fetchColumn()) {
+                        throw new Exception('Jadwal tidak ditemukan.');
+                    }
+                }
+
+                redirectSchedule(['success' => 'Status jadwal berhasil diperbarui.']);
             }
 
             if ($action === 'delete') {
                 $id = (int) ($_POST['id'] ?? 0);
+
+                if ($id <= 0) {
+                    throw new Exception('ID jadwal tidak valid.');
+                }
+
+                $pdo->beginTransaction();
+
+                $owner = $pdo->prepare("
+                    SELECT id
+                    FROM work_schedules
+                    WHERE id = ? AND company_id = ?
+                    FOR UPDATE
+                ");
+                $owner->execute([$id, $companyId]);
+
+                if (!$owner->fetchColumn()) {
+                    throw new Exception('Jadwal tidak ditemukan.');
+                }
 
                 $check = $pdo->prepare("
                     SELECT COUNT(*)
@@ -199,8 +268,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     );
                 }
 
-                $pdo->beginTransaction();
-
                 $deleteDays = $pdo->prepare("
                     DELETE FROM schedule_days
                     WHERE schedule_id = ?
@@ -214,31 +281,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $deleteSchedule->execute([$id, $companyId]);
 
                 $pdo->commit();
-
-                redirectSchedule([
-                    'success' => 'Jadwal berhasil dihapus.'
-                ]);
-            }
-        } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+                redirectSchedule(['success' => 'Jadwal berhasil dihapus.']);
             }
 
-            $error = $e->getMessage();
-        }
+            throw new Exception('Aksi tidak dikenali.');
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    error_log(
+        'Attendly jadwal.php: ' .
+        $e->getMessage() .
+        ' | File: ' . $e->getFile() .
+        ' | Line: ' . $e->getLine()
+    );
+
+    $error = 'Detail kesalahan: ' . $e->getMessage()
+           . ' (Baris: ' . $e->getLine() . ')';
+}
     }
 }
 
 if (isset($_GET['success'])) {
-    $success = $_GET['success'];
+    $success = (string) $_GET['success'];
 }
 
-/* STATISTIK */
+/* STATISTIK JADWAL */
 $stmt = $pdo->prepare("
     SELECT
         COUNT(*) AS total,
-        SUM(status = 'active') AS active,
-        SUM(status = 'inactive') AS inactive
+        COALESCE(SUM(status = 'active'), 0) AS active,
+        COALESCE(SUM(status = 'inactive'), 0) AS inactive
     FROM work_schedules
     WHERE company_id = ?
 ");
@@ -249,16 +323,16 @@ $stmt = $pdo->prepare("
     SELECT COUNT(DISTINCT employee_id)
     FROM employee_schedules
     WHERE company_id = ?
+      AND (effective_until IS NULL OR effective_until >= CURDATE())
 ");
 $stmt->execute([$companyId]);
 $assignedEmployees = (int) $stmt->fetchColumn();
 
 /* FILTER DAN PAGINATION */
-$search = trim($_GET['search'] ?? '');
-$statusFilter = $_GET['status'] ?? '';
+$search = trim((string) ($_GET['search'] ?? ''));
+$statusFilter = (string) ($_GET['status'] ?? '');
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $limit = 10;
-$offset = ($page - 1) * $limit;
 
 $where = ['ws.company_id = ?'];
 $params = [$companyId];
@@ -281,9 +355,11 @@ $stmt = $pdo->prepare("
     WHERE $whereSql
 ");
 $stmt->execute($params);
-
 $totalRows = (int) $stmt->fetchColumn();
+
 $totalPages = max(1, (int) ceil($totalRows / $limit));
+$page = min($page, $totalPages);
+$offset = ($page - 1) * $limit;
 
 /* DAFTAR JADWAL */
 $stmt = $pdo->prepare("
@@ -293,16 +369,18 @@ $stmt = $pdo->prepare("
             SELECT GROUP_CONCAT(sd.day_of_week ORDER BY sd.day_of_week)
             FROM schedule_days sd
             WHERE sd.schedule_id = ws.id
+              AND sd.is_working_day = 1
         ) AS work_days,
         (
             SELECT COUNT(DISTINCT es.employee_id)
             FROM employee_schedules es
             WHERE es.schedule_id = ws.id
               AND es.company_id = ws.company_id
+              AND (es.effective_until IS NULL OR es.effective_until >= CURDATE())
         ) AS employee_count
     FROM work_schedules ws
     WHERE $whereSql
-    ORDER BY ws.created_at DESC
+    ORDER BY ws.created_at DESC, ws.id DESC
     LIMIT $limit OFFSET $offset
 ");
 $stmt->execute($params);
@@ -328,13 +406,11 @@ if (isset($_GET['edit'])) {
             SELECT day_of_week
             FROM schedule_days
             WHERE schedule_id = ?
+              AND is_working_day = 1
+            ORDER BY day_of_week
         ");
         $stmt->execute([$editId]);
-
-        $editDays = array_map(
-            'intval',
-            $stmt->fetchAll(PDO::FETCH_COLUMN)
-        );
+        $editDays = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
     }
 }
 
@@ -876,9 +952,12 @@ $user = attendly_user();
 
                             <td>
                                 <div class="fw-semibold">
-                                    <?= e(substr($schedule['start_time'], 0, 5)) ?>
+                                    <?= e(substr($schedule['dock_in'], 0, 5)) ?>
                                     -
-                                    <?= e(substr($schedule['end_time'], 0, 5)) ?>
+                                    <?= e(substr($schedule['dock_out'], 0, 5)) ?>
+                                    <?php if (!empty($schedule['cross_day'])): ?>
+                                        <span class="badge text-bg-info ms-1">Lintas hari</span>
+                                    <?php endif; ?>
                                 </div>
                             </td>
 
@@ -908,7 +987,7 @@ $user = attendly_user();
                                 ?>
                             </td>
 
-                            <td><?= (int) $schedule['grace_period'] ?> menit</td>
+                            <td><?= (int) $schedule['late_tolerance_minutes'] ?> menit</td>
 
                             <td>
                                 <span class="fw-semibold"><?= (int) $schedule['employee_count'] ?></span>
@@ -1053,14 +1132,14 @@ $user = attendly_user();
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Jam Masuk *</label>
                             <input type="time" name="start_time" class="form-control"
-                                   value="<?= e(isset($editSchedule['start_time']) ? substr($editSchedule['start_time'], 0, 5) : '08:00') ?>"
+                                   value="<?= e(isset($editSchedule['dock_in']) ? substr($editSchedule['dock_in'], 0, 5) : '08:00') ?>"
                                    required>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Jam Pulang *</label>
                             <input type="time" name="end_time" class="form-control"
-                                   value="<?= e(isset($editSchedule['end_time']) ? substr($editSchedule['end_time'], 0, 5) : '17:00') ?>"
+                                   value="<?= e(isset($editSchedule['dock_out']) ? substr($editSchedule['dock_out'], 0, 5) : '17:00') ?>"
                                    required>
                         </div>
 
@@ -1080,7 +1159,7 @@ $user = attendly_user();
                             <label class="form-label fw-semibold">Toleransi Keterlambatan (Menit)</label>
                             <input type="number" name="grace_period" class="form-control"
                                    min="0" max="180"
-                                   value="<?= e($editSchedule['grace_period'] ?? 15) ?>">
+                                   value="<?= e($editSchedule['late_tolerance_minutes'] ?? 15) ?>">
                         </div>
 
                         <div class="col-md-6">

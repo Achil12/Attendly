@@ -3,18 +3,11 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/session.php';
 
-attendly_require_auth();
+attendly_require_tenant();
+attendly_require_role(['owner', 'admin', 'manager']);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-$companyId = attendly_company_id();
+$companyId = attendly_require_company_id();
 $user = attendly_user();
-
-if (!$companyId) {
-    exit('Company tidak ditemukan. Silakan login kembali.');
-}
 
 function e($value) {
     return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
@@ -73,31 +66,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Format tanggal masuk tidak valid.';
             }
 
-            /* Validasi departemen */
-            if (!$error && $departmentId > 0) {
-                $check = $pdo->prepare("
-                    SELECT id FROM departments
-                    WHERE id = ? AND company_id = ?
-                    LIMIT 1
-                ");
-                $check->execute([$departmentId, $companyId]);
-
-                if (!$check->fetch()) {
-                    $error = 'Departemen tidak ditemukan.';
-                }
-            }
-
-            /* Validasi jabatan */
+            /* Validasi jabatan dan kesesuaian departemen */
             if (!$error && $positionId > 0) {
                 $check = $pdo->prepare("
-                    SELECT id FROM positions
-                    WHERE id = ? AND company_id = ?
+                    SELECT id
+                    FROM positions
+                    WHERE id = ?
+                    AND company_id = ?
+                    AND department_id = ?
                     LIMIT 1
                 ");
-                $check->execute([$positionId, $companyId]);
+
+                $check->execute([
+                    $positionId,
+                    $companyId,
+                    $departmentId
+                ]);
 
                 if (!$check->fetch()) {
-                    $error = 'Jabatan tidak ditemukan.';
+                    $error = 'Jabatan tidak ditemukan atau tidak sesuai dengan departemen.';
                 }
             }
 
@@ -156,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     /* Periksa RFID duplikat */
-                    if ($cardUid !== '') {
+                    if ($cardUid !== '' && $status === 'active') { 
                         $duplicateCard = $pdo->prepare("
                             SELECT employee_id
                             FROM employee_cards
@@ -525,6 +512,7 @@ if (!empty($user['roles'])) {
         : $user['roles'];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -961,7 +949,7 @@ body {
         <i class="fa-solid fa-gear"></i> Pengaturan
     </a>
 
-    <a href="logout.php"
+    <a href="../logout.php"
        onclick="return confirm('Apakah Anda yakin ingin logout?')">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
     </a>
