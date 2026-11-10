@@ -212,6 +212,11 @@ Attendly dibangun menggunakan teknologi web yang umum digunakan untuk pengembang
   <img src="docs/screenshots/absensi.png" alt="Manajemen Absensi" width="100%">
 </p>
 
+<p align="center">
+  <strong>Absensi Users</strong>
+  <br>
+  <img src="docs/screenshots/absensi.png" alt="Manajemen Absensi" width="100%">
+</p>
 ---
 
 ## Persyaratan Sistem
