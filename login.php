@@ -26,7 +26,7 @@ function attendly_login_redirect(): string
         return 'karyawan/dashboard_karyawan.php';
     }
 
-    return 'dashboard.php';
+    return 'admin/dashboard.php';
 }
 
 /*

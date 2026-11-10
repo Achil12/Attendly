@@ -9,15 +9,23 @@ attendly_require_role(['owner', 'admin', 'manager']);
 $companyId = attendly_require_company_id();
 $user = attendly_user();
 
-function e($value) {
+/* =========================================================
+   HELPER
+========================================================= */
+
+function e($value): string
+{
     return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
-function redirectPage($params = []) {
+function redirectPage(array $params = []): void
+{
     $url = 'karyawan.php';
-    if ($params) {
+
+    if (!empty($params)) {
         $url .= '?' . http_build_query($params);
     }
+
     header('Location: ' . $url);
     exit;
 }
@@ -26,49 +34,107 @@ $success = '';
 $error = '';
 
 /* =========================================================
-   PROSES SIMPAN KARYAWAN
+   PROSES POST
 ========================================================= */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!attendly_verify_csrf($_POST['csrf_token'] ?? '')) {
+
         $error = 'Token keamanan tidak valid. Silakan muat ulang halaman.';
+
     } else {
 
         $action = $_POST['action'] ?? '';
 
+        /* =================================================
+           SIMPAN / TAMBAH / EDIT KARYAWAN
+        ================================================= */
+
         if ($action === 'save_employee') {
 
             $id = (int)($_POST['employee_id'] ?? 0);
+
             $nik = trim($_POST['nik'] ?? '');
             $name = trim($_POST['name'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $phone = trim($_POST['phone'] ?? '');
             $gender = trim($_POST['gender'] ?? '');
             $joinDate = trim($_POST['join_date'] ?? '');
+
             $departmentId = (int)($_POST['department_id'] ?? 0);
             $positionId = (int)($_POST['position_id'] ?? 0);
+
             $status = $_POST['status'] ?? 'active';
             $cardUid = strtoupper(trim($_POST['card_uid'] ?? ''));
 
             $photoName = null;
             $uploadedPhoto = null;
+            $oldPhoto = null;
+
+            /* ---------------------------------------------
+               VALIDASI INPUT
+            --------------------------------------------- */
 
             if ($nik === '' || $name === '') {
+
                 $error = 'NIK dan nama karyawan wajib diisi.';
-            } elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+            } elseif (
+                $email !== '' &&
+                !filter_var($email, FILTER_VALIDATE_EMAIL)
+            ) {
+
                 $error = 'Format email tidak valid.';
-            } elseif (!in_array($gender, ['Laki-laki', 'Perempuan'], true)) {
+
+            } elseif (
+                !in_array($gender, ['Laki-laki', 'Perempuan'], true)
+            ) {
+
                 $error = 'Jenis kelamin tidak valid.';
-            } elseif (!in_array($status, ['active', 'inactive'], true)) {
+
+            } elseif (
+                !in_array($status, ['active', 'inactive', 'resigned'], true)
+            ) {
+
                 $error = 'Status karyawan tidak valid.';
-            } elseif ($joinDate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $joinDate)) {
+
+            } elseif (
+                $joinDate !== '' &&
+                !preg_match('/^\d{4}-\d{2}-\d{2}$/', $joinDate)
+            ) {
+
                 $error = 'Format tanggal masuk tidak valid.';
+
             }
 
-            /* Validasi jabatan dan kesesuaian departemen */
+            /* ---------------------------------------------
+               VALIDASI DEPARTEMEN DAN JABATAN
+            --------------------------------------------- */
+
+            if (!$error && $departmentId > 0) {
+
+                $checkDepartment = $pdo->prepare("
+                    SELECT id
+                    FROM departments
+                    WHERE id = ?
+                    AND company_id = ?
+                    LIMIT 1
+                ");
+
+                $checkDepartment->execute([
+                    $departmentId,
+                    $companyId
+                ]);
+
+                if (!$checkDepartment->fetchColumn()) {
+                    $error = 'Departemen tidak ditemukan.';
+                }
+            }
+
             if (!$error && $positionId > 0) {
-                $check = $pdo->prepare("
+
+                $checkPosition = $pdo->prepare("
                     SELECT id
                     FROM positions
                     WHERE id = ?
@@ -77,25 +143,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     LIMIT 1
                 ");
 
-                $check->execute([
+                $checkPosition->execute([
                     $positionId,
                     $companyId,
                     $departmentId
                 ]);
 
-                if (!$check->fetch()) {
+                if (!$checkPosition->fetchColumn()) {
                     $error = 'Jabatan tidak ditemukan atau tidak sesuai dengan departemen.';
                 }
             }
 
-            /* Validasi foto */
-            if (!$error && isset($_FILES['photo']) && $_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+            /* ---------------------------------------------
+               VALIDASI FOTO
+            --------------------------------------------- */
+
+            if (
+                !$error &&
+                isset($_FILES['photo']) &&
+                $_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE
+            ) {
 
                 if ($_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+
                     $error = 'Upload foto gagal.';
+
                 } elseif ($_FILES['photo']['size'] > 1024 * 1024) {
+
                     $error = 'Ukuran foto maksimal 1 MB.';
+
                 } else {
+
                     $allowedMime = [
                         'image/jpeg' => 'jpg',
                         'image/png' => 'png',
@@ -106,44 +184,109 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $mime = $finfo->file($_FILES['photo']['tmp_name']);
 
                     if (!isset($allowedMime[$mime])) {
+
                         $error = 'Format foto harus JPG, PNG, atau WebP.';
+
                     } else {
+
                         $uploadDir = __DIR__ . '/uploads/employees/';
 
-                        if (!is_dir($uploadDir)) {
-                            mkdir($uploadDir, 0755, true);
-                        }
+                        if (
+                            !is_dir($uploadDir) &&
+                            !mkdir($uploadDir, 0755, true) &&
+                            !is_dir($uploadDir)
+                        ) {
+                            $error = 'Folder upload foto tidak dapat dibuat.';
+                        } else {
 
-                        $photoName = bin2hex(random_bytes(16)) . '.' . $allowedMime[$mime];
-                        $uploadedPhoto = $uploadDir . $photoName;
+                            $photoName = bin2hex(random_bytes(16))
+                                . '.'
+                                . $allowedMime[$mime];
 
-                        if (!move_uploaded_file($_FILES['photo']['tmp_name'], $uploadedPhoto)) {
-                            $error = 'Tidak dapat menyimpan foto.';
+                            $uploadedPhoto = $uploadDir . $photoName;
+
+                            if (
+                                !move_uploaded_file(
+                                    $_FILES['photo']['tmp_name'],
+                                    $uploadedPhoto
+                                )
+                            ) {
+                                $error = 'Tidak dapat menyimpan foto.';
+                            }
                         }
                     }
                 }
             }
 
+            /* ---------------------------------------------
+               PROSES DATABASE
+            --------------------------------------------- */
+
             if (!$error) {
+
                 try {
+
                     $pdo->beginTransaction();
 
-                    /* Periksa NIK duplikat */
+                    /* -------------------------------------
+                       PERIKSA KARYAWAN LAMA
+                    ------------------------------------- */
+
+                    if ($id > 0) {
+
+                        $checkEmployee = $pdo->prepare("
+                            SELECT id, photo
+                            FROM employees
+                            WHERE id = ?
+                            AND company_id = ?
+                            LIMIT 1
+                            FOR UPDATE
+                        ");
+
+                        $checkEmployee->execute([
+                            $id,
+                            $companyId
+                        ]);
+
+                        $oldEmployee = $checkEmployee->fetch(PDO::FETCH_ASSOC);
+
+                        if (!$oldEmployee) {
+                            throw new Exception('Data karyawan tidak ditemukan.');
+                        }
+
+                        $oldPhoto = $oldEmployee['photo'];
+
+                    }
+
+                    /* -------------------------------------
+                       PERIKSA NIK DUPLIKAT
+                    ------------------------------------- */
+
                     $duplicate = $pdo->prepare("
-                        SELECT id FROM employees
+                        SELECT id
+                        FROM employees
                         WHERE company_id = ?
                         AND nik = ?
                         AND id != ?
                         LIMIT 1
                     ");
-                    $duplicate->execute([$companyId, $nik, $id]);
 
-                    if ($duplicate->fetch()) {
+                    $duplicate->execute([
+                        $companyId,
+                        $nik,
+                        $id
+                    ]);
+
+                    if ($duplicate->fetchColumn()) {
                         throw new Exception('NIK sudah digunakan oleh karyawan lain.');
                     }
 
-                    /* Periksa RFID duplikat */
-                    if ($cardUid !== '' && $status === 'active') { 
+                    /* -------------------------------------
+                       PERIKSA UID RFID DUPLIKAT
+                    ------------------------------------- */
+
+                    if ($cardUid !== '') {
+
                         $duplicateCard = $pdo->prepare("
                             SELECT employee_id
                             FROM employee_cards
@@ -152,29 +295,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             AND employee_id != ?
                             LIMIT 1
                         ");
-                        $duplicateCard->execute([$companyId, $cardUid, $id]);
 
-                        if ($duplicateCard->fetch()) {
+                        $duplicateCard->execute([
+                            $companyId,
+                            $cardUid,
+                            $id
+                        ]);
+
+                        if ($duplicateCard->fetchColumn()) {
                             throw new Exception('UID RFID sudah digunakan karyawan lain.');
                         }
                     }
 
+                    /* -------------------------------------
+                       FOTO KARYAWAN
+                    ------------------------------------- */
+
+                    $finalPhoto = $photoName;
+
+                    if ($id > 0 && !$photoName) {
+                        $finalPhoto = $oldPhoto;
+                    }
+
+                    /* -------------------------------------
+                       UPDATE KARYAWAN
+                    ------------------------------------- */
+
                     if ($id > 0) {
-
-                        $checkEmployee = $pdo->prepare("
-                            SELECT id, photo
-                            FROM employees
-                            WHERE id = ? AND company_id = ?
-                            LIMIT 1
-                        ");
-                        $checkEmployee->execute([$id, $companyId]);
-                        $oldEmployee = $checkEmployee->fetch(PDO::FETCH_ASSOC);
-
-                        if (!$oldEmployee) {
-                            throw new Exception('Data karyawan tidak ditemukan.');
-                        }
-
-                        $finalPhoto = $photoName ?: $oldEmployee['photo'];
 
                         $update = $pdo->prepare("
                             UPDATE employees SET
@@ -189,7 +336,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 status = ?,
                                 photo = ?,
                                 updated_at = NOW()
-                            WHERE id = ? AND company_id = ?
+                            WHERE id = ?
+                            AND company_id = ?
                         ");
 
                         $update->execute([
@@ -209,10 +357,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         $employeeId = $id;
 
-                        /* Hapus foto lama setelah transaksi berhasil */
-                        $oldPhoto = $oldEmployee['photo'];
-
                     } else {
+
+                        /* ---------------------------------
+                           TAMBAH KARYAWAN BARU
+                        --------------------------------- */
 
                         $insert = $pdo->prepare("
                             INSERT INTO employees (
@@ -229,7 +378,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 photo,
                                 created_at,
                                 updated_at
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                            ) VALUES (
+                                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                                NOW(), NOW()
+                            )
                         ");
 
                         $insert->execute([
@@ -247,34 +399,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ]);
 
                         $employeeId = (int)$pdo->lastInsertId();
-                        $oldPhoto = null;
                     }
 
-                    /* Simpan atau nonaktifkan kartu RFID */
+                    /* -------------------------------------
+                       KELOLA KARTU RFID
+                    ------------------------------------- */
+
+                    /*
+                     * employee_cards.status hanya menerima:
+                     * active, blocked, lost, expired
+                     *
+                     * employees.status menerima:
+                     * active, inactive, resigned
+                     */
+
+                    $cardStatus = (
+                        $cardUid !== '' &&
+                        $status === 'active'
+                    ) ? 'active' : 'blocked';
+
+                    $cardCheck = $pdo->prepare("
+                        SELECT id
+                        FROM employee_cards
+                        WHERE company_id = ?
+                        AND employee_id = ?
+                        ORDER BY id DESC
+                        LIMIT 1
+                    ");
+
+                    $cardCheck->execute([
+                        $companyId,
+                        $employeeId
+                    ]);
+
+                    $existingCard = $cardCheck->fetch(PDO::FETCH_ASSOC);
+
                     if ($cardUid !== '') {
 
-                        $cardCheck = $pdo->prepare("
-                            SELECT id FROM employee_cards
-                            WHERE company_id = ?
-                            AND employee_id = ?
-                            ORDER BY id DESC
-                            LIMIT 1
-                        ");
-                        $cardCheck->execute([$companyId, $employeeId]);
-                        $existingCard = $cardCheck->fetch(PDO::FETCH_ASSOC);
-
                         if ($existingCard) {
+
+                            /* Perbarui kartu yang sudah ada */
+
                             $cardUpdate = $pdo->prepare("
                                 UPDATE employee_cards
-                                SET card_uid = ?, status = 'active'
-                                WHERE id = ? AND company_id = ?
+                                SET
+                                    card_uid = ?,
+                                    status = ?
+                                WHERE id = ?
+                                AND company_id = ?
+                                AND employee_id = ?
                             ");
+
                             $cardUpdate->execute([
                                 $cardUid,
+                                $cardStatus,
                                 $existingCard['id'],
-                                $companyId
+                                $companyId,
+                                $employeeId
                             ]);
+
                         } else {
+
+                            /* Daftarkan kartu baru */
+
                             $cardInsert = $pdo->prepare("
                                 INSERT INTO employee_cards (
                                     company_id,
@@ -282,36 +469,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     card_uid,
                                     status,
                                     created_at
-                                ) VALUES (?, ?, ?, 'active', NOW())
+                                ) VALUES (?, ?, ?, ?, NOW())
                             ");
+
                             $cardInsert->execute([
                                 $companyId,
                                 $employeeId,
-                                $cardUid
+                                $cardUid,
+                                $cardStatus
                             ]);
                         }
 
                     } else {
+
+                        /*
+                         * UID dikosongkan.
+                         * Blokir kartu yang masih aktif.
+                         * Status lost dan expired tetap dipertahankan.
+                         */
+
                         $deactivateCard = $pdo->prepare("
                             UPDATE employee_cards
-                            SET status = 'inactive'
-                            WHERE company_id = ? AND employee_id = ?
+                            SET status = 'blocked'
+                            WHERE company_id = ?
+                            AND employee_id = ?
+                            AND status = 'active'
                         ");
-                        $deactivateCard->execute([$companyId, $employeeId]);
+
+                        $deactivateCard->execute([
+                            $companyId,
+                            $employeeId
+                        ]);
                     }
+
+                    /* -------------------------------------
+                       SELESAI TRANSAKSI
+                    ------------------------------------- */
 
                     $pdo->commit();
 
-                    if (!empty($oldPhoto) && $photoName) {
-                        $oldPath = __DIR__ . '/uploads/employees/' . basename($oldPhoto);
+                    /* Hapus foto lama setelah transaksi berhasil */
+
+                    if (
+                        !empty($oldPhoto) &&
+                        $photoName &&
+                        $oldPhoto !== $photoName
+                    ) {
+
+                        $oldPath = __DIR__
+                            . '/uploads/employees/'
+                            . basename($oldPhoto);
+
                         if (is_file($oldPath)) {
                             unlink($oldPath);
                         }
                     }
 
-                    redirectPage(['success' => $id > 0 ? 'updated' : 'created']);
+                    redirectPage([
+                        'success' => $id > 0 ? 'updated' : 'created'
+                    ]);
 
                 } catch (Throwable $ex) {
+
                     if ($pdo->inTransaction()) {
                         $pdo->rollBack();
                     }
@@ -329,36 +548,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            NONAKTIFKAN KARYAWAN
         ================================================= */
 
-        if ($action === 'delete_employee') {
+        elseif ($action === 'delete_employee') {
 
             $id = (int)($_POST['employee_id'] ?? 0);
 
-            if ($id > 0) {
+            if ($id < 1) {
+
+                $error = 'ID karyawan tidak valid.';
+
+            } else {
+
                 try {
+
                     $pdo->beginTransaction();
+
+                    /* Pastikan karyawan milik perusahaan */
+
+                    $checkEmployee = $pdo->prepare("
+                        SELECT id
+                        FROM employees
+                        WHERE id = ?
+                        AND company_id = ?
+                        LIMIT 1
+                        FOR UPDATE
+                    ");
+
+                    $checkEmployee->execute([
+                        $id,
+                        $companyId
+                    ]);
+
+                    if (!$checkEmployee->fetchColumn()) {
+                        throw new Exception('Data karyawan tidak ditemukan.');
+                    }
+
+                    /* Nonaktifkan karyawan */
 
                     $update = $pdo->prepare("
                         UPDATE employees
-                        SET status = 'inactive', updated_at = NOW()
-                        WHERE id = ? AND company_id = ?
+                        SET
+                            status = 'inactive',
+                            updated_at = NOW()
+                        WHERE id = ?
+                        AND company_id = ?
                     ");
-                    $update->execute([$id, $companyId]);
+
+                    $update->execute([
+                        $id,
+                        $companyId
+                    ]);
+
+                    /* Blokir kartu RFID aktif */
 
                     $card = $pdo->prepare("
                         UPDATE employee_cards
-                        SET status = 'inactive'
-                        WHERE employee_id = ? AND company_id = ?
+                        SET status = 'blocked'
+                        WHERE employee_id = ?
+                        AND company_id = ?
+                        AND status = 'active'
                     ");
-                    $card->execute([$id, $companyId]);
+
+                    $card->execute([
+                        $id,
+                        $companyId
+                    ]);
 
                     $pdo->commit();
 
-                    redirectPage(['success' => 'deactivated']);
+                    redirectPage([
+                        'success' => 'deactivated'
+                    ]);
 
                 } catch (Throwable $ex) {
+
                     if ($pdo->inTransaction()) {
                         $pdo->rollBack();
                     }
+
                     $error = $ex->getMessage();
                 }
             }
@@ -371,6 +637,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ========================================================= */
 
 if (isset($_GET['success'])) {
+
     $messages = [
         'created' => 'Karyawan berhasil ditambahkan.',
         'updated' => 'Data karyawan berhasil diperbarui.',
@@ -389,25 +656,55 @@ $departmentFilter = (int)($_GET['department'] ?? 0);
 $statusFilter = $_GET['status'] ?? '';
 
 $page = max(1, (int)($_GET['page'] ?? 1));
+
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$where = ['e.company_id = ?'];
-$params = [$companyId];
+$where = [
+    'e.company_id = ?'
+];
+
+$params = [
+    $companyId
+];
 
 if ($search !== '') {
-    $where[] = '(e.name LIKE ? OR e.nik LIKE ? OR e.email LIKE ?)';
+
+    $where[] = '
+        (
+            e.name LIKE ?
+            OR e.nik LIKE ?
+            OR e.email LIKE ?
+        )
+    ';
+
     $keyword = '%' . $search . '%';
-    array_push($params, $keyword, $keyword, $keyword);
+
+    array_push(
+        $params,
+        $keyword,
+        $keyword,
+        $keyword
+    );
 }
 
 if ($departmentFilter > 0) {
+
     $where[] = 'e.department_id = ?';
+
     $params[] = $departmentFilter;
 }
 
-if (in_array($statusFilter, ['active', 'inactive'], true)) {
+if (
+    in_array(
+        $statusFilter,
+        ['active', 'inactive', 'resigned'],
+        true
+    )
+) {
+
     $where[] = 'e.status = ?';
+
     $params[] = $statusFilter;
 }
 
@@ -420,20 +717,30 @@ $whereSql = implode(' AND ', $where);
 $statsQuery = $pdo->prepare("
     SELECT
         COUNT(*) AS total,
+
         SUM(status = 'active') AS active,
+
         SUM(status = 'inactive') AS inactive,
+
+        SUM(status = 'resigned') AS resigned,
+
         SUM(
             join_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
             AND join_date <= CURDATE()
         ) AS new_employees
+
     FROM employees
     WHERE company_id = ?
 ");
-$statsQuery->execute([$companyId]);
+
+$statsQuery->execute([
+    $companyId
+]);
+
 $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
 
 /* =========================================================
-   DATA DEPARTEMEN DAN JABATAN
+   DATA DEPARTEMEN
 ========================================================= */
 
 $departmentQuery = $pdo->prepare("
@@ -442,16 +749,31 @@ $departmentQuery = $pdo->prepare("
     WHERE company_id = ?
     ORDER BY name ASC
 ");
-$departmentQuery->execute([$companyId]);
+
+$departmentQuery->execute([
+    $companyId
+]);
+
 $departments = $departmentQuery->fetchAll(PDO::FETCH_ASSOC);
 
+/* =========================================================
+   DATA JABATAN
+========================================================= */
+
 $positionQuery = $pdo->prepare("
-    SELECT id, department_id, name
+    SELECT
+        id,
+        department_id,
+        name
     FROM positions
     WHERE company_id = ?
     ORDER BY name ASC
 ");
-$positionQuery->execute([$companyId]);
+
+$positionQuery->execute([
+    $companyId
+]);
+
 $positions = $positionQuery->fetchAll(PDO::FETCH_ASSOC);
 
 /* =========================================================
@@ -463,10 +785,22 @@ $countQuery = $pdo->prepare("
     FROM employees e
     WHERE $whereSql
 ");
+
 $countQuery->execute($params);
 
 $totalRows = (int)$countQuery->fetchColumn();
-$totalPages = max(1, (int)ceil($totalRows / $limit));
+
+$totalPages = max(
+    1,
+    (int)ceil($totalRows / $limit)
+);
+
+/* Pastikan halaman tidak melebihi jumlah halaman */
+
+if ($page > $totalPages) {
+    $page = $totalPages;
+    $offset = ($page - 1) * $limit;
+}
 
 /* =========================================================
    AMBIL DATA KARYAWAN
@@ -475,43 +809,63 @@ $totalPages = max(1, (int)ceil($totalRows / $limit));
 $listQuery = $pdo->prepare("
     SELECT
         e.*,
+
         d.name AS department_name,
+
         p.name AS position_name,
+
         (
             SELECT ec.card_uid
             FROM employee_cards ec
+
             WHERE ec.employee_id = e.id
             AND ec.company_id = e.company_id
             AND ec.status = 'active'
+
             ORDER BY ec.id DESC
             LIMIT 1
+
         ) AS card_uid
+
     FROM employees e
+
     LEFT JOIN departments d
         ON d.id = e.department_id
         AND d.company_id = e.company_id
+
     LEFT JOIN positions p
         ON p.id = e.position_id
         AND p.company_id = e.company_id
+
     WHERE $whereSql
+
     ORDER BY e.id DESC
+
     LIMIT $limit OFFSET $offset
 ");
 
 $listQuery->execute($params);
+
 $employees = $listQuery->fetchAll(PDO::FETCH_ASSOC);
+
+/* =========================================================
+   SESSION DAN PROFIL
+========================================================= */
 
 $csrfToken = attendly_csrf_token();
 
 $currentName = $user['name'] ?? 'Administrator';
+
 $currentRole = 'Administrator';
 
 if (!empty($user['roles'])) {
+
     $currentRole = is_array($user['roles'])
         ? implode(', ', $user['roles'])
         : $user['roles'];
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

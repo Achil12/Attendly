@@ -494,41 +494,8 @@ $workingDaysText = array_unique($workingDaysText);
 
 <body>
 
-<aside class="sidebar" id="sidebar">
-    <a href="dashboard_karyawan.php" class="brand">
-        <span class="brand-icon"><i class="fa-solid fa-calendar-check"></i></span>
-        Attendly
-    </a>
-
-    <div class="menu-label">Menu Karyawan</div>
-
-    <nav>
-        <a href="dashboard_karyawan.php" class="nav-link">
-            <i class="fa-solid fa-house"></i> Dashboard
-        </a>
-
-        <a href="profil.php" class="nav-link">
-            <i class="fa-solid fa-user"></i> Profil Saya
-        </a>
-
-        <a href="absensi_saya.php" class="nav-link">
-            <i class="fa-solid fa-clock"></i> Riwayat Absensi
-        </a>
-
-        <a href="pengajuan_izin.php" class="nav-link">
-            <i class="fa-solid fa-file-circle-check"></i> Pengajuan Izin
-        </a>
-
-        <a href="jadwal_saya.php" class="nav-link active">
-            <i class="fa-solid fa-calendar-days"></i> Jadwal Kerja
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        <div class="fw-bold text-white mb-1">Attendly System</div>
-        <div>Employee Portal · Versi 1.0.0</div>
-    </div>
-</aside>
+<!--navbar-->
+<?php include "add/sidebar.php"; ?>
 
 <main class="main-content">
 
