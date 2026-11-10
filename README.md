@@ -197,25 +197,25 @@ Attendly dibangun menggunakan teknologi web yang umum digunakan untuk pengembang
 <p align="center">
   <strong>Dashboard Attendly</strong>
   <br>
-  <img src="docs/screenshots/dashboard.png" alt="Dashboard Attendly" width="100%">
+  <img src="img/gambar.PNG" alt="Dashboard Attendly" width="100%">
 </p>
 
 <p align="center">
   <strong>Manajemen Karyawan</strong>
   <br>
-  <img src="docs/screenshots/karyawan.png" alt="Manajemen Karyawan" width="100%">
+  <img src="img/gambar2.PNG" alt="Manajemen Karyawan" width="100%">
 </p>
 
 <p align="center">
   <strong>Manajemen Absensi</strong>
   <br>
-  <img src="docs/screenshots/absensi.png" alt="Manajemen Absensi" width="100%">
+  <img src="img/gambar3.PNG" alt="Manajemen Absensi" width="100%">
 </p>
 
 <p align="center">
   <strong>Absensi Users</strong>
   <br>
-  <img src="docs/screenshots/absensi.png" alt="Manajemen Absensi" width="100%">
+  <img src="img/absenuser.PNG" alt="Manajemen Absensi" width="100%">
 </p>
 ---
 
